@@ -111,13 +111,6 @@ The following code snipets show how to use the SDK.
         })
     })
 </script>
-
-const keyPair = client.generateKeypairWithProtocolId("SHA256WithECDSA");
-```
-
-### Generating an RSA key pair.
-```
-const keyPair = client.generateKeypairWithProtocolId("SHA256WithRSA");
 ```
 
 ## Code structure
