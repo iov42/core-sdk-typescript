@@ -92,7 +92,7 @@ class PlatformClient {
     // Converts a base64 string to base64Url string
     // Input:
     // input -> string in base64
-    public b64ToB64Url(input: string) {
+    private b64ToB64Url(input: string) {
         const output = input.split("=")[0];
         const output1 = output.replace(/\+/g, "-");
         const output2 = output1.replace(/\//g, "_");
@@ -102,7 +102,7 @@ class PlatformClient {
     // Converts a base64Url string to base64 string
     // Input:
     // input -> string in base64Url
-    public b64UrlToB64(input: string) {
+    private b64UrlToB64(input: string) {
         const output = input.split("=")[0];
         const output1 = output.replace(/\-/g, "+");
         let output2 = output1.replace(/\_/g, "/");
@@ -153,7 +153,7 @@ class PlatformClient {
     // keylenOrCurveName -> length of key or curve to be used for generating the
     // key (see supported values in jsrsasign library)
     // format -> encoding format for returning key data (only supports "base64url")
-    public generateKeypair(algorithm: string, keylenOrCurveName: string, format: string) {
+    private generateKeypair(algorithm: string, keylenOrCurveName: string, format: string) {
         let keypair;
 
         switch ( algorithm ) {
@@ -219,7 +219,7 @@ class PlatformClient {
     // format -> encoding format for returning signature data (only supports "base64url")
     // privateKey -> private key data
     // payload -> string to be signed
-    public sign(algorithm: string, curveName: string, format: string, privateKey: string, payload: string) {
+    private sign(algorithm: string, curveName: string, format: string, privateKey: string, payload: string) {
         let signature;
         let sig;
 
@@ -275,7 +275,7 @@ class PlatformClient {
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
     // requestId -> unique id for each request to the iov42 platform
     // payload -> string that is beeing signed (uri)
-    public createGetHeaders(identityId: string, privateKey: string, protocolId: string,
+    private createGetHeaders(identityId: string, privateKey: string, protocolId: string,
                             requestId: string, payload: string) {
         const authentication: IAuthenticationData = {
             identityId,
@@ -299,7 +299,7 @@ class PlatformClient {
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
     // requestId -> unique id for each request to the iov42 platform
     // payload -> string that is beeing signed (body)
-    public createPostHeaders(identityId: string, privateKey: string, protocolId: string,
+    private createPostHeaders(identityId: string, privateKey: string, protocolId: string,
                              requestId: string, payload: string) {
         const signatureBase64 = this.signWithProtocolId(protocolId, privateKey, payload);
         const authorisations: IAuthorisationsData = [
@@ -341,7 +341,7 @@ class PlatformClient {
         return response;
     }
 
-    public executeReadRequest(url: string, headers?: IGetHeadersData) {
+    private executeReadRequest(url: string, headers?: IGetHeadersData) {
 
         let options: object;
 
@@ -375,7 +375,7 @@ class PlatformClient {
         });
     }
 
-    public async executePostRequest(url: string, body: string, headers: IPostHeadersData) {
+    private executePostRequest(url: string, body: string, headers: IPostHeadersData) {
         const options = {
             // agent: new HttpsProxyAgent('http://127.0.0.1:8888'),
             body,
