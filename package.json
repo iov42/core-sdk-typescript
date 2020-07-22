@@ -4,9 +4,9 @@
   "description": "Typescript library to interact with the iov42 platform",
   "main": "iov42/core-sdk.js",
   "scripts": {
-    "build": "webpack && uglifyjs ./dist/iov42.js -c -m -o ./dist/iov42.min.js --source-map",
+    "build": "node_modules/.bin/webpack && uglifyjs ./dist/iov42.js -c -m -o ./dist/iov42.min.js --source-map",
     "lint": "tslint -c tslint.json './iov42/*.ts'",
-    "test": " mocha -r ts-node/register tests/*.ts",
+    "test": "node_modules/.bin/mocha -r ts-node/register tests/*.ts",
     "postinstall": "npm run build"
   },
   "author": "Luiz Inacio",

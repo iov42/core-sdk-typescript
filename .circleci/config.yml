@@ -1,17 +1,22 @@
 version: 2.1
-orbs:
-  node: circleci/node@1.1.6
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
+  test:
+    working_directory: ~/project
+    docker:
+        - image: circleci/node:lts
     steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm test
+        - checkout
+        - run:
+            name: Install local dependencies
+            command: npm install
+        - run:
+            name: Testing
+            command: npm run test
+        - run:
+            name: Audit
+            command: npm audit
 workflows:
-    build-and-test:
-      jobs:
-        - build-and-test
+  version: 2
+  build-test:
+    jobs:
+      - test
