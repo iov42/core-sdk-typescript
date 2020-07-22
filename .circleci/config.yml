@@ -1,0 +1,30 @@
+version: 2.1
+jobs:
+  test:
+    working_directory: ~/project
+    docker:
+        - image: circleci/node:lts
+    steps:
+        - checkout
+        - run:
+            name: Install local dependencies
+            command: npm install
+        - run: mkdir ~/junit
+        - run:
+            name: Testing
+            command: npm run test -- --reporter mocha-junit-reporter
+            environment:
+              MOCHA_FILE: /home/circleci/junit/test-results.xml
+            when: always
+        - store_test_results:
+            path: ~/junit
+        - store_artifacts:
+            path: ~/junit
+        - run:
+            name: Audit
+            command: npm audit
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - test
