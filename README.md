@@ -120,6 +120,8 @@ The iov42 folder contains the main source files:
 
 The tests folder contains the automated tests:
 - `create-identity.ts` uses the SDK functions to create and retrieve identities.
+- `create-keypair.ts` uses the SDK functions to create a key pair.
+- `node-info.ts` uses the SDK functions to retrieve node information.
 
 The html folder contains sample HTML files showing how to use the SDK:
 - `create-identity.html` uses the SDK functions to create and retrieve identities.
