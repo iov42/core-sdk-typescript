@@ -1,0 +1,22 @@
+version: 2.1
+jobs:
+  test:
+    working_directory: ~/project
+    docker:
+        - image: circleci/node:lts
+    steps:
+        - checkout
+        - run:
+            name: Install local dependencies
+            command: npm install
+        - run:
+            name: Testing
+            command: npm run test
+        - run:
+            name: Audit
+            command: npm audit
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - test
