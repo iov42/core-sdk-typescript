@@ -34,12 +34,12 @@ const client = new PlatformClient(rpcUrl);
 
 ### Generating an ECDSA key pair.
 ```
-const keyPair = client.generateKeypairWithProtocolId("SHA256WithECDSA");
+const keyPair = client.generateKeypairWithProtocolId("SHA256WithECDSA" as ProtocolIdType);
 ```
 
 ### Generating an RSA key pair.
 ```
-const keyPair = client.generateKeypairWithProtocolId("SHA256WithRSA");
+const keyPair = client.generateKeypairWithProtocolId("SHA256WithRSA" as ProtocolIdType);
 ```
 
 ### Creating an identity.
@@ -47,13 +47,14 @@ const keyPair = client.generateKeypairWithProtocolId("SHA256WithRSA");
 import { v4 as uuidv4 } from "uuid";
 const requestId = uuidv4();
 const identityId = uuidv4();
-const keyPair = client.generateKeypairWithProtocolId(input.protocolId);
+const protocoldId: ProtocolIdType = "SHA256WithECDSA";
+const keyPair = client.generateKeypairWithProtocolId(protocolId);
 const request = {
     requestId : requestId,
     identityId : identityId,
     publicCredentials : {
         key: keyPair.pubKeyBase64,
-        protocolId: input.protocolId
+        protocolId: keyPair.protocolId
     },
 };
 return client.createIdentity(request, keyPair )

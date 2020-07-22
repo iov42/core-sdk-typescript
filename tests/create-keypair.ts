@@ -1,21 +1,18 @@
 import { expect } from "chai";
 import "mocha";
-import { v4 as uuidv4 } from "uuid";
-import { IKeyPairData, PlatformClient } from "../iov42/core-sdk";
+import { IKeyPairData, PlatformClient, ProtocolIdType } from "../iov42/core-sdk";
 
 const rpcUrl = "https://api.sandbox.iov42.dev";
 const platformClient = new PlatformClient(rpcUrl);
 
-let identityId: string;
-let requestId: string;
 let keyPair: IKeyPairData;
 
 const inputs = [
     {
-        protocolId: "SHA256WithRSA",
+        protocolId: "SHA256WithRSA" as ProtocolIdType,
     },
     {
-        protocolId: "SHA256WithECDSA",
+        protocolId: "SHA256WithECDSA" as ProtocolIdType,
     },
 ];
 

@@ -89,42 +89,10 @@ class PlatformClient {
         });
     }
 
-    // Converts a base64 string to base64Url string
-    // Input:
-    // input -> string in base64
-    private b64ToB64Url(input: string) {
-        const output = input.split("=")[0];
-        const output1 = output.replace(/\+/g, "-");
-        const output2 = output1.replace(/\//g, "_");
-        return output2;
-    }
-
-    // Converts a base64Url string to base64 string
-    // Input:
-    // input -> string in base64Url
-    private b64UrlToB64(input: string) {
-        const output = input.split("=")[0];
-        const output1 = output.replace(/\-/g, "+");
-        let output2 = output1.replace(/\_/g, "/");
-        switch (output.length % 4) {
-            case 0:
-                break;
-            case 2:
-                output2 = output2 + "==";
-                break;
-            case 3:
-                output2 = output2 + "=";
-                break;
-            default:
-                throw (new Error("Illegal base64url string!"));
-        }
-        return output2;
-    }
-
     // Generates a key pair using one of the supported protocolId supported by iov42 platform
     // Input:
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
-    public generateKeypairWithProtocolId(protocolId: string) {
+    public generateKeypairWithProtocolId(protocolId: ProtocolIdType) {
         let keypair;
 
         switch ( protocolId ) {
@@ -144,6 +112,108 @@ class PlatformClient {
             prvKeyBase64: keypair.prvKeyBase64,
             pubKeyBase64: keypair.pubKeyBase64,
         };
+    }
+
+    // Signs the payload using one of the supported protocolId supported by iov42 platform
+    // Input:
+    // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
+    // privateKey -> private key data
+    // payload -> string to be signed
+    public signWithProtocolId(protocolId: ProtocolIdType, privateKey: string, payload: string) {
+        let prvKeyHex;
+        let signature;
+
+        switch ( protocolId ) {
+        case "SHA256WithRSA":
+            prvKeyHex = Buffer.from(this.b64UrlToB64(privateKey), "base64").toString("hex");
+            signature = this.sign("SHA256withRSA", "", "base64url", prvKeyHex, payload);
+            break;
+
+        case "SHA256WithECDSA":
+            prvKeyHex = Buffer.from(this.b64UrlToB64(privateKey), "base64").toString("hex");
+            signature = this.sign("SHA256withECDSA", "secp256k1", "base64url", prvKeyHex, payload);
+            break;
+
+        default:
+            throw (new Error("Invalid protocolId"));
+        }
+        return signature;
+    }
+
+    // Returns the url of the api server
+    public getUrl() {
+        return this.url;
+    }
+
+    // Retrives information about a node in the iov42 platform
+    // See api specs at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/operations/paths/~1node-info/get
+    public async getNodeInfo() {
+        const response = await this.executeReadRequest(
+            this.url + `/api/${this.version}/node-info`,
+        );
+        return response;
+    }
+
+    // Generates a hash according to the specified algorithm, and returns the result encoded as base64Url
+    // Input:
+    // algorithm -> algorithm to use for hashing (see supported values in jsrsasign library)
+    // payload -> string to be hashed
+    public hash(algorithm: string, payload: string) {
+        const md = new rs.KJUR.crypto.MessageDigest({alg : algorithm, prov : "cryptojs"});
+        md.updateString (payload);
+        const mdHex = md.digest();
+        return this.b64ToB64Url(Buffer.from(mdHex, "hex").toString("base64"));
+    }
+
+    // Returns the status of a request in the iov42 platform
+    // See api specs at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/requests/paths/~1requests~1{requestId}/get
+    public async getRequest(requestId: string) {
+        const response = await this.executeReadRequest(
+            this.url + `/api/${this.version}/requests/${requestId}`,
+        );
+        return response;
+    }
+
+    // Creates an identity in the iov42 platform
+    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities/post
+    public async createIdentity(request: ICreateIdentityRequest, keyPair: IKeyPairData) {
+        const identityId = request.identityId;
+        if (!request.hasOwnProperty("requestId")) {
+            request.requestId = uuidv4();
+        }
+        const payload = JSON.stringify(request);
+        const headers: IPostHeadersData = this.createPostHeaders(
+            identityId,
+            keyPair.prvKeyBase64,
+            keyPair.protocolId,
+            request.requestId as string,
+            payload,
+        );
+        const response = await this.executePostRequest(
+            this.url + `/api/${this.version}/identities`,
+            payload,
+            headers,
+        );
+        return response;
+    }
+
+    // Retrieves an identity in the iov42 platform
+    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}/get
+    public async getIdentity(identityId: string, keyPair: IKeyPairData) {
+        const requestId = uuidv4();
+        const relativeUrl = `/api/${this.version}/identities/${identityId}?requestId=${requestId}&nodeId=${this.nodeId}`;
+        const headers: IGetHeadersData = this.createGetHeaders(
+            identityId,
+            keyPair.prvKeyBase64,
+            keyPair.protocolId,
+            requestId,
+            relativeUrl,
+        );
+        const response = await this.executeReadRequest(
+            this.url + relativeUrl,
+            headers,
+        );
+        return response;
     }
 
     // Generates a key pair according to the specified algorithm, length or curve,
@@ -185,30 +255,36 @@ class PlatformClient {
         }
     }
 
-    // Signs the payload using one of the supported protocolId supported by iov42 platform
+    // Converts a base64 string to base64Url string
     // Input:
-    // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
-    // privateKey -> private key data
-    // payload -> string to be signed
-    public signWithProtocolId(protocolId: string, privateKey: string, payload: string) {
-        let prvKeyHex;
-        let signature;
+    // input -> string in base64
+    private b64ToB64Url(input: string) {
+        const output = input.split("=")[0];
+        const output1 = output.replace(/\+/g, "-");
+        const output2 = output1.replace(/\//g, "_");
+        return output2;
+    }
 
-        switch ( protocolId ) {
-        case "SHA256WithRSA":
-            prvKeyHex = Buffer.from(this.b64UrlToB64(privateKey), "base64").toString("hex");
-            signature = this.sign("SHA256withRSA", "", "base64url", prvKeyHex, payload);
-            break;
-
-        case "SHA256WithECDSA":
-            prvKeyHex = Buffer.from(this.b64UrlToB64(privateKey), "base64").toString("hex");
-            signature = this.sign("SHA256withECDSA", "secp256k1", "base64url", prvKeyHex, payload);
-            break;
-
-        default:
-            throw (new Error("Invalid protocolId"));
+    // Converts a base64Url string to base64 string
+    // Input:
+    // input -> string in base64Url
+    private b64UrlToB64(input: string) {
+        const output = input.split("=")[0];
+        const output1 = output.replace(/\-/g, "+");
+        let output2 = output1.replace(/\_/g, "/");
+        switch (output.length % 4) {
+            case 0:
+                break;
+            case 2:
+                output2 = output2 + "==";
+                break;
+            case 3:
+                output2 = output2 + "=";
+                break;
+            default:
+                throw (new Error("Illegal base64url string!"));
         }
-        return signature;
+        return output2;
     }
 
     // Signs the payload according to the specified algorithm, curve, and returns the result in
@@ -257,17 +333,6 @@ class PlatformClient {
         }
     }
 
-    // Generates a hash according to the specified algorithm, and returns the result encoded as base64Url
-    // Input:
-    // algorithm -> algorithm to use for hashing (see supported values in jsrsasign library)
-    // payload -> string to be hashed
-    public hash(algorithm: string, payload: string) {
-        const md = new rs.KJUR.crypto.MessageDigest({alg : algorithm, prov : "cryptojs"});
-        md.updateString (payload);
-        const mdHex = md.digest();
-        return this.b64ToB64Url(Buffer.from(mdHex, "hex").toString("base64"));
-    }
-
     // Creates signed headers for GET requests to the iov42 platform
     // Input:
     // identityId -> identity that is signing the GET request
@@ -275,8 +340,8 @@ class PlatformClient {
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
     // requestId -> unique id for each request to the iov42 platform
     // payload -> string that is beeing signed (uri)
-    private createGetHeaders(identityId: string, privateKey: string, protocolId: string,
-                            requestId: string, payload: string) {
+    private createGetHeaders(identityId: string, privateKey: string, protocolId: ProtocolIdType,
+                             requestId: string, payload: string) {
         const authentication: IAuthenticationData = {
             identityId,
             protocolId,
@@ -299,8 +364,8 @@ class PlatformClient {
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
     // requestId -> unique id for each request to the iov42 platform
     // payload -> string that is beeing signed (body)
-    private createPostHeaders(identityId: string, privateKey: string, protocolId: string,
-                             requestId: string, payload: string) {
+    private createPostHeaders(identityId: string, privateKey: string, protocolId: ProtocolIdType,
+                              requestId: string, payload: string) {
         const signatureBase64 = this.signWithProtocolId(protocolId, privateKey, payload);
         const authorisations: IAuthorisationsData = [
             {
@@ -326,23 +391,7 @@ class PlatformClient {
         return headers;
     }
 
-    // Returns the url of the api server
-    public getUrl() {
-        return this.url;
-    }
-
-    // Retrives information about a node in the iov42 platform
-    // See api specs at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/operations/paths/~1node-info/get
-    public async getNodeInfo() {
-
-        const response = await this.executeReadRequest(
-            this.url + `/api/${this.version}/node-info`,
-        );
-        return response;
-    }
-
     private executeReadRequest(url: string, headers?: IGetHeadersData) {
-
         let options: object;
 
         if (headers !== undefined) {
@@ -391,65 +440,11 @@ class PlatformClient {
         return fetch(url, options)
         .then( async (response) => {
             const json = await response.json();
-
             if (response.status !== 200) {
                 throw (new Error(JSON.stringify(json)));
             }
             return json;
         });
-    }
-
-    // Returns the status of a request in the iov42 platform
-    // See api specs at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/requests/paths/~1requests~1{requestId}/get
-    public async getRequest(requestId: string) {
-
-        const response = await this.executeReadRequest(
-            this.url + `/api/${this.version}/requests/${requestId}`,
-        );
-        return response;
-    }
-
-    // Creates an identity in the iov42 platform
-    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities/post
-    public async createIdentity(request: ICreateIdentityRequest, keyPair: IKeyPairData) {
-        const identityId = request.identityId;
-        if (!request.hasOwnProperty("requestId")) {
-            request.requestId = uuidv4();
-        }
-        const payload = JSON.stringify(request);
-        const headers: IPostHeadersData = this.createPostHeaders(
-            identityId,
-            keyPair.prvKeyBase64,
-            keyPair.protocolId,
-            request.requestId as string,
-            payload,
-        );
-        const response = await this.executePostRequest(
-            this.url + `/api/${this.version}/identities`,
-            payload,
-            headers,
-        );
-        return response;
-    }
-
-    // Retrieves an identity in the iov42 platform
-    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}/get
-    public async getIdentity(identityId: string, keyPair: IKeyPairData) {
-
-        const requestId = uuidv4();
-        const relativeUrl = `/api/${this.version}/identities/${identityId}?requestId=${requestId}&nodeId=${this.nodeId}`;
-        const headers: IGetHeadersData = this.createGetHeaders(
-            identityId,
-            keyPair.prvKeyBase64,
-            keyPair.protocolId,
-            requestId,
-            relativeUrl,
-        );
-        const response = await this.executeReadRequest(
-            this.url + relativeUrl,
-            headers,
-        );
-        return response;
     }
 
 }
