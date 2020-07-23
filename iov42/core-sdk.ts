@@ -145,11 +145,20 @@ class PlatformClient {
         return this.url;
     }
 
-    // Retrives information about a node in the iov42 platform
+    // Retrieves information about a node in the iov42 platform
     // See api specs at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/operations/paths/~1node-info/get
     public async getNodeInfo() {
         const response = await this.executeReadRequest(
             this.url + `/api/${this.version}/node-info`,
+        );
+        return response;
+    }
+
+    // Retrieves information about the node's health
+    // See api specs at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/operations/paths/~1healthchecks/get
+    public async getHealthChecks() {
+        const response = await this.executeReadRequest(
+            this.url + `/api/${this.version}/healthchecks`,
         );
         return response;
     }
