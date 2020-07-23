@@ -56,6 +56,17 @@ inputs.forEach(function(input) {
                 });
             });
         });
+
+        describe("Retrieve created identity's public key", function() {
+            it("should return success", function() {
+                return platformClient.getPublicKey(identityId, keyPair )
+                .then( (response) => {
+                    expect(response.key).to.equal(keyPair.pubKeyBase64);
+                    expect(response.protocolId).to.equal(input.protocolId);
+                });
+            });
+        });
+
     });
 
 });

@@ -16,7 +16,7 @@ $ npm install
 ## Running automated tests
 
 You can run the test cases by using the npm tool:
-```shell
+```console
 $ npm run test
 ```
 
@@ -111,13 +111,13 @@ The following code snipets show how to use the SDK.
 </script>
 ```
 
-## Code structure
+## Library structure
 
 The iov42 folder contains the main source files:
 - `core-sdk.ts` exports the PlatformClient class with all the functions to interact with the iov42 platform.
 
 The tests folder contains the automated tests:
-- `create-identity.ts` uses the SDK functions to create and retrieve identities.
+- `identity.ts` uses the SDK functions to work with identities.
 - `create-keypair.ts` uses the SDK functions to create a key pair.
 - `healthchecks.ts` uses the SDK functions to retrieve node's health information.
 - `node-info.ts` uses the SDK functions to retrieve node information.

@@ -186,6 +186,7 @@ class PlatformClient {
     // Creates an identity in the iov42 platform
     // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities/post
     public async createIdentity(request: ICreateIdentityRequest, keyPair: IKeyPairData) {
+        await this.ready;
         const identityId = request.identityId;
         if (!request.hasOwnProperty("requestId")) {
             request.requestId = uuidv4();
@@ -199,7 +200,6 @@ class PlatformClient {
             payload,
         );
 
-        await this.ready;
         const response = await this.executePostRequest(
             this.url + `/api/${this.version}/identities`,
             payload,
@@ -211,6 +211,7 @@ class PlatformClient {
     // Retrieves an identity in the iov42 platform
     // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}/get
     public async getIdentity(identityId: string, keyPair: IKeyPairData) {
+        await this.ready;
         const requestId = uuidv4();
         const relativeUrl = `/api/${this.version}/identities/${identityId}?requestId=${requestId}&nodeId=${this.nodeId}`;
         const headers: IGetHeadersData = this.createGetHeaders(
@@ -220,7 +221,26 @@ class PlatformClient {
             requestId,
             relativeUrl,
         );
+        const response = await this.executeReadRequest(
+            this.url + relativeUrl,
+            headers,
+        );
+        return response;
+    }
+
+    // Retrieves the public key of an identity
+    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1public-key/get
+    public async getPublicKey(identityId: string, keyPair: IKeyPairData) {
         await this.ready;
+        const requestId = uuidv4();
+        const relativeUrl = `/api/${this.version}/identities/${identityId}/public-key?requestId=${requestId}&nodeId=${this.nodeId}`;
+        const headers: IGetHeadersData = this.createGetHeaders(
+            identityId,
+            keyPair.prvKeyBase64,
+            keyPair.protocolId,
+            requestId,
+            relativeUrl,
+        );
         const response = await this.executeReadRequest(
             this.url + relativeUrl,
             headers,
