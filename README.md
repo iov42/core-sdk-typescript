@@ -7,7 +7,7 @@ This repository contains the iov42 core SDK for typescript/javascript, that can 
 The prerequisites for installing the SDK are `git` and Node.js (version 10 or higher).
 
 Clone the repository with the example code, install all dependencies, and build package:
-```
+```shell
 $ git clone https://github.com/iov42/core-sdk-typescript.git
 $ cd core-sdk-typescript
 $ npm install
@@ -16,7 +16,7 @@ $ npm install
 ## Running automated tests
 
 You can run the test cases by using the npm tool:
-```
+```shell
 $ npm run test
 ```
 
@@ -25,7 +25,7 @@ $ npm run test
 The following code snipets show how to use the SDK.
 
 ### Importing library and instantiating the platform client.
-```
+```node
 import { PlatformClient } from '../iov42/core-sdk';
 
 const rpcUrl = "https://api.sandbox.iov42.dev";
@@ -33,17 +33,17 @@ const client = new PlatformClient(rpcUrl);
 ```
 
 ### Generating an ECDSA key pair.
-```
+```node
 const keyPair = client.generateKeypairWithProtocolId("SHA256WithECDSA" as ProtocolIdType);
 ```
 
 ### Generating an RSA key pair.
-```
+```node
 const keyPair = client.generateKeypairWithProtocolId("SHA256WithRSA" as ProtocolIdType);
 ```
 
 ### Creating an identity.
-```
+```node
 import { v4 as uuidv4 } from "uuid";
 const requestId = uuidv4();
 const identityId = uuidv4();
@@ -64,7 +64,7 @@ return client.createIdentity(request, keyPair)
 ```
 
 ### Retrieving an identity.
-```
+```node
 return client.getIdentity(identityId, keyPair)
 .then( (response) => {
     console.log(JSON.stringify(response));
