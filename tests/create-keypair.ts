@@ -21,8 +21,7 @@ inputs.forEach(function(input) {
         this.timeout(10000);
 
         describe("Create new key pair", function() {
-            it("should return success", async function() {
-                await platformClient.ready;
+            it("should return success", function() {
                 keyPair = platformClient.generateKeypairWithProtocolId(input.protocolId);
                     expect(keyPair.protocolId).to.equal(input.protocolId);
                     expect(keyPair.pubKeyBase64).to.exist;

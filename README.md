@@ -57,7 +57,7 @@ const request = {
         protocolId: keyPair.protocolId
     },
 };
-return client.createIdentity(request, keyPair )
+return client.createIdentity(request, keyPair)
 .then( (response) => {
     console.log(JSON.stringify(response));
 })
@@ -65,7 +65,7 @@ return client.createIdentity(request, keyPair )
 
 ### Retrieving an identity.
 ```
-return client.getIdentity(identityId, keyPair )
+return client.getIdentity(identityId, keyPair)
 .then( (response) => {
     console.log(JSON.stringify(response));
 })
@@ -88,28 +88,25 @@ The following code snipets show how to use the SDK.
 <script type="module">
     import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
     const platformClient = new iov42.PlatformClient("https://api.sandbox.iov42.dev");
-    platformClient.ready
-    .then (() => {
-        const requestId = uuidv4();
-        const identityId = uuidv4();
-        const protocolId = "SHA256WithECDSA";
-        const keyPair = platformClient.generateKeypairWithProtocolId(protocolId);
-        const request = {
-            requestId : requestId,
-            identityId : identityId,
-            publicCredentials : {
-                key: keyPair.pubKeyBase64,
-                protocolId: protocolId
-            },
-        };
-        platformClient.createIdentity(request, keyPair)
-        .then ((response) => {
-            console.log(JSON.stringify(response));
-            return platformClient.getIdentity(identityId, keyPair )
-        })
-        .then ((response) => {
-            console.log(JSON.stringify(response));
-        })
+    const requestId = uuidv4();
+    const identityId = uuidv4();
+    const protocolId = "SHA256WithECDSA";
+    const keyPair = platformClient.generateKeypairWithProtocolId(protocolId);
+    const request = {
+        requestId : requestId,
+        identityId : identityId,
+        publicCredentials : {
+            key: keyPair.pubKeyBase64,
+            protocolId: protocolId
+        },
+    };
+    platformClient.createIdentity(request, keyPair)
+    .then ((response) => {
+        console.log(JSON.stringify(response));
+        return platformClient.getIdentity(identityId, keyPair )
+    })
+    .then ((response) => {
+        console.log(JSON.stringify(response));
     })
 </script>
 ```

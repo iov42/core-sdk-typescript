@@ -189,6 +189,8 @@ class PlatformClient {
             request.requestId as string,
             payload,
         );
+
+        await this.ready;
         const response = await this.executePostRequest(
             this.url + `/api/${this.version}/identities`,
             payload,
@@ -209,6 +211,7 @@ class PlatformClient {
             requestId,
             relativeUrl,
         );
+        await this.ready;
         const response = await this.executeReadRequest(
             this.url + relativeUrl,
             headers,

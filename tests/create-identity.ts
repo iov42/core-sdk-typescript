@@ -24,8 +24,7 @@ inputs.forEach(function(input) {
         this.timeout(10000);
 
         describe("Create new identity", function() {
-            it("should return success", async function() {
-                await platformClient.ready;
+            it("should return success", function() {
                 requestId = uuidv4();
                 identityId = uuidv4();
                 keyPair = platformClient.generateKeypairWithProtocolId(input.protocolId);
@@ -47,8 +46,7 @@ inputs.forEach(function(input) {
         });
 
         describe("Retrieve created identity", function() {
-            it("should return success", async function() {
-                await platformClient.ready;
+            it("should return success", function() {
                 return platformClient.getIdentity(identityId, keyPair )
                 .then( (response) => {
                     expect(response.identityId).to.equal(identityId);
