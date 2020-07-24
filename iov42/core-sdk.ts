@@ -539,7 +539,7 @@ class PlatformClient {
             identityId,
             keyPair,
             payload,
-        )
+        );
         const authorisationsJson = JSON.stringify(authorisations);
         const authorisationsBase64Url = base64Url(authorisationsJson);
 
@@ -547,7 +547,7 @@ class PlatformClient {
             identityId,
             keyPair,
             authorisations[0].signature,
-        )
+        );
         const authenticationJson = JSON.stringify(authentication);
         const authenticationBase64Url = base64Url(authenticationJson);
         const headers: IPostHeadersData = {
