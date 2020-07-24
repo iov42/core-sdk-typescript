@@ -51,11 +51,29 @@ export interface IPublicCredentials {
     protocolId: string;
 }
 
-// Data structure used to create identity
-export interface ICreateIdentityRequest {
+// Base data structure for all requests
+export interface IBaseRequest {
     requestId?: string;
+}
+
+// Base data structure for signed requests
+export interface IAuthorisedRequest extends IBaseRequest {
+    authentication?: IAuthenticationData;
+    authorisations: IAuthorisationsData;
+    payload: string;
+    requestId: string;
+}
+
+// Data structure used to create identity
+export interface ICreateIdentityRequest extends IBaseRequest {
     identityId: string;
     publicCredentials: IPublicCredentials;
+}
+
+// Data structure used to add delegate to identity
+export interface IAddDelegateRequest extends IBaseRequest {
+    delegateIdentityId: string;
+    requestId?: string;
 }
 
 // This class implements functions to interface with the iov42 rest api.
@@ -194,8 +212,7 @@ class PlatformClient {
         const payload = JSON.stringify(request);
         const headers: IPostHeadersData = this.createPostHeaders(
             identityId,
-            keyPair.prvKeyBase64,
-            keyPair.protocolId,
+            keyPair,
             request.requestId as string,
             payload,
         );
@@ -216,8 +233,7 @@ class PlatformClient {
         const relativeUrl = `/api/${this.version}/identities/${identityId}?requestId=${requestId}&nodeId=${this.nodeId}`;
         const headers: IGetHeadersData = this.createGetHeaders(
             identityId,
-            keyPair.prvKeyBase64,
-            keyPair.protocolId,
+            keyPair,
             requestId,
             relativeUrl,
         );
@@ -236,8 +252,94 @@ class PlatformClient {
         const relativeUrl = `/api/${this.version}/identities/${identityId}/public-key?requestId=${requestId}&nodeId=${this.nodeId}`;
         const headers: IGetHeadersData = this.createGetHeaders(
             identityId,
-            keyPair.prvKeyBase64,
-            keyPair.protocolId,
+            keyPair,
+            requestId,
+            relativeUrl,
+        );
+        const response = await this.executeReadRequest(
+            this.url + relativeUrl,
+            headers,
+        );
+        return response;
+    }
+
+    // Prepares request with initial authorisation signature
+    // Input:
+    // identityId -> identity that is adding the signature
+    // request -> request to be signed
+    // keyPair -> identityId's key pair
+    public prepareRequest(identityId: string, request: IBaseRequest, keyPair: IKeyPairData) {
+        if (!request.hasOwnProperty("requestId")) {
+            request.requestId = uuidv4();
+        }
+        const payload = JSON.stringify(request);
+        const signedRequest: IAuthorisedRequest = {
+            authorisations: [{
+                identityId,
+                protocolId: keyPair.protocolId,
+                signature: this.signWithProtocolId(keyPair.protocolId, keyPair.prvKeyBase64, payload),
+            }],
+            payload,
+            requestId: request.requestId as string,
+        };
+        return signedRequest;
+    }
+
+    // Adds authorisation signature to request
+    // Input:
+    // identityId -> identity that is adding the signature
+    // request -> request to be signed
+    // keyPair -> identityId's key pair
+    public addSignatureRequest(identityId: string, request: IAuthorisedRequest, keyPair: IKeyPairData) {
+        const signature: IAuthorisationData = {
+            identityId,
+            protocolId: keyPair.protocolId,
+            signature: this.signWithProtocolId(keyPair.protocolId, keyPair.prvKeyBase64, request.payload),
+        };
+        request.authorisations.push(signature);
+        return request;
+    }
+
+    // Adds delegate to an identity
+    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1delegates/post
+    public async addDelegate(identityId: string, request: IAuthorisedRequest, keyPair: IKeyPairData) {
+        await this.ready;
+
+        const authorisationsJson = JSON.stringify(request.authorisations);
+        const authorisationsBase64Url = base64Url(authorisationsJson);
+        request.authentication = {
+            identityId,
+            protocolId: keyPair.protocolId,
+            signature : this.signWithProtocolId (
+                keyPair.protocolId,
+                keyPair.prvKeyBase64,
+                request.authorisations.reduce( (p: any, c: any) => `${p}${c.signature};`, "").slice(0, -1)),
+        };
+        const authenticationJson = JSON.stringify(request.authentication);
+        const authenticationBase64Url = base64Url(authenticationJson);
+
+        const headers: IPostHeadersData = {
+            authenticationBase64Url,
+            authorisationsBase64Url,
+            requestId: request.requestId,
+        };
+        const response = await this.executePostRequest(
+            this.url + `/api/${this.version}/identities/${identityId}/delegates`,
+            request.payload,
+            headers,
+        );
+        return response;
+    }
+
+    // Retrieves the delegates of an identity
+    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1delegates/get
+    public async getDelegates(identityId: string, keyPair: IKeyPairData) {
+        await this.ready;
+        const requestId = uuidv4();
+        const relativeUrl = `/api/${this.version}/identities/${identityId}/delegates?requestId=${requestId}&nodeId=${this.nodeId}`;
+        const headers: IGetHeadersData = this.createGetHeaders(
+            identityId,
+            keyPair,
             requestId,
             relativeUrl,
         );
@@ -372,13 +474,48 @@ class PlatformClient {
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
     // requestId -> unique id for each request to the iov42 platform
     // payload -> string that is beeing signed (uri)
-    private createGetHeaders(identityId: string, privateKey: string, protocolId: ProtocolIdType,
-                             requestId: string, payload: string) {
+    private createAuthenticationHeader(identityId: string, keyPair: IKeyPairData, payload: string) {
         const authentication: IAuthenticationData = {
             identityId,
-            protocolId,
-            signature : this.signWithProtocolId(protocolId, privateKey, payload),
+            protocolId: keyPair.protocolId,
+            signature : this.signWithProtocolId(keyPair.protocolId, keyPair.prvKeyBase64, payload),
         };
+        return authentication;
+    }
+
+    // Creates signed headers for POST requests to the iov42 platform
+    // Input:
+    // identityId -> identity that is signing the POST request
+    // privateKey -> private key data for the identity signing the POST request
+    // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
+    // requestId -> unique id for each request to the iov42 platform
+    // payload -> string that is beeing signed (body)
+    private createAuthorisationsHeader(identityId: string, keyPair: IKeyPairData, payload: string) {
+        const signatureBase64 = this.signWithProtocolId(keyPair.protocolId, keyPair.prvKeyBase64, payload);
+        const authorisations: IAuthorisationsData = [
+            {
+                identityId,
+                protocolId: keyPair.protocolId,
+                signature : signatureBase64,
+            },
+        ];
+        return authorisations;
+    }
+
+    // Creates signed headers for GET requests to the iov42 platform
+    // Input:
+    // identityId -> identity that is signing the GET request
+    // privateKey -> private key data for the identity signing the GET request
+    // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
+    // requestId -> unique id for each request to the iov42 platform
+    // payload -> string that is beeing signed (uri)
+    private createGetHeaders(identityId: string, keyPair: IKeyPairData,
+                             requestId: string, payload: string) {
+        const authentication: IAuthenticationData = this.createAuthenticationHeader(
+            identityId,
+            keyPair,
+            payload,
+        );
         const authenticationJson = JSON.stringify(authentication);
         const authenticationBase64Url = base64Url(authenticationJson);
 
@@ -396,23 +533,21 @@ class PlatformClient {
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
     // requestId -> unique id for each request to the iov42 platform
     // payload -> string that is beeing signed (body)
-    private createPostHeaders(identityId: string, privateKey: string, protocolId: ProtocolIdType,
+    private createPostHeaders(identityId: string, keyPair: IKeyPairData,
                               requestId: string, payload: string) {
-        const signatureBase64 = this.signWithProtocolId(protocolId, privateKey, payload);
-        const authorisations: IAuthorisationsData = [
-            {
-                identityId,
-                protocolId,
-                signature : signatureBase64,
-            },
-        ];
+        const authorisations: IAuthorisationsData = this.createAuthorisationsHeader(
+            identityId,
+            keyPair,
+            payload,
+        )
         const authorisationsJson = JSON.stringify(authorisations);
         const authorisationsBase64Url = base64Url(authorisationsJson);
-        const authentication: IAuthenticationData = {
+
+        const authentication: IAuthenticationData = this.createAuthenticationHeader(
             identityId,
-            protocolId,
-            signature : this.signWithProtocolId(protocolId, privateKey, signatureBase64),
-        };
+            keyPair,
+            authorisations[0].signature,
+        )
         const authenticationJson = JSON.stringify(authentication);
         const authenticationBase64Url = base64Url(authenticationJson);
         const headers: IPostHeadersData = {
@@ -428,7 +563,7 @@ class PlatformClient {
 
         if (headers !== undefined) {
             options = {
-                // agent: new HttpsProxyAgent('http://127.0.0.1:8888'),
+                // agent: new HttpsProxyAgent("http://127.0.0.1:8888"),
                 headers: {
                     "Accept": "application/json",
                     "X-IOV42-Authentication": headers.authenticationBase64Url,
@@ -438,7 +573,7 @@ class PlatformClient {
 
         } else {
             options = {
-                // agent: new HttpsProxyAgent('http://127.0.0.1:8888'),
+                // agent: new HttpsProxyAgent("http://127.0.0.1:8888"),
                 headers: {
                     Accept: "application/json",
                 },
@@ -458,7 +593,7 @@ class PlatformClient {
 
     private executePostRequest(url: string, body: string, headers: IPostHeadersData) {
         const options = {
-            // agent: new HttpsProxyAgent('http://127.0.0.1:8888'),
+            // agent: new HttpsProxyAgent("http://127.0.0.1:8888"),
             body,
             headers: {
                 "Content-Type": "application/json",
@@ -466,7 +601,6 @@ class PlatformClient {
                 "X-IOV42-Authorisations": headers.authorisationsBase64Url,
             },
             method: "post",
-            // redirect: "manual" as RequestRedirect,
         };
 
         return fetch(url, options)

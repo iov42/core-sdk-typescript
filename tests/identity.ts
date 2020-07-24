@@ -36,7 +36,7 @@ inputs.forEach(function(input) {
                     },
                     requestId,
                 };
-                return platformClient.createIdentity(request, keyPair )
+                return platformClient.createIdentity(request, keyPair)
                 .then( (response) => {
                     expect(response.requestId).to.equal(requestId);
                     expect(response.resources[0]).to.equal(`/api/v1/identities/${identityId}`);
@@ -47,7 +47,7 @@ inputs.forEach(function(input) {
 
         describe("Retrieve created identity", function() {
             it("should return success", function() {
-                return platformClient.getIdentity(identityId, keyPair )
+                return platformClient.getIdentity(identityId, keyPair)
                 .then( (response) => {
                     expect(response.identityId).to.equal(identityId);
                     expect(response.publicCredentials[0].key).to.equal(keyPair.pubKeyBase64);
@@ -59,7 +59,7 @@ inputs.forEach(function(input) {
 
         describe("Retrieve created identity's public key", function() {
             it("should return success", function() {
-                return platformClient.getPublicKey(identityId, keyPair )
+                return platformClient.getPublicKey(identityId, keyPair)
                 .then( (response) => {
                     expect(response.key).to.equal(keyPair.pubKeyBase64);
                     expect(response.protocolId).to.equal(input.protocolId);
