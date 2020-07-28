@@ -70,6 +70,12 @@ export interface ICreateIdentityRequest extends IBaseRequest {
     publicCredentials: IPublicCredentials;
 }
 
+// Data structure used to create asset types
+export interface ICreateAssetTypeRequest extends IBaseRequest {
+    assetTypeId: string;
+    type: string;
+}
+
 // Data structure used to add delegate to identity
 export interface IAddDelegateRequest extends IBaseRequest {
     delegateIdentityId: string;
@@ -197,6 +203,56 @@ class PlatformClient {
     public async getRequest(requestId: string) {
         const response = await this.executeReadRequest(
             this.url + `/api/${this.version}/requests/${requestId}`,
+        );
+        return response;
+    }
+
+    // Creates an asset type in the iov42 platform
+    // See api spec at https://api.staging.iov42.net/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types/post
+    public async createAssetType(identityId: string, request: IAuthorisedRequest, keyPair: IKeyPairData) {
+        await this.ready;
+
+        const authorisationsJson = JSON.stringify(request.authorisations);
+        const authorisationsBase64Url = base64Url(authorisationsJson);
+        request.authentication = {
+            identityId,
+            protocolId: keyPair.protocolId,
+            signature: this.signWithProtocolId(
+                keyPair.protocolId,
+                keyPair.prvKeyBase64,
+                request.authorisations.reduce((p: any, c: any) => `${p}${c.signature};`, "").slice(0, -1)),
+        };
+        const authenticationJson = JSON.stringify(request.authentication);
+        const authenticationBase64Url = base64Url(authenticationJson);
+
+        const headers: IPostHeadersData = {
+            authenticationBase64Url,
+            authorisationsBase64Url,
+            requestId: request.requestId,
+        };
+        const response = await this.executePostRequest(
+            this.url + `/api/${this.version}/asset-types`,
+            request.payload,
+            headers,
+        );
+        return response;
+    }
+
+    // Retrieves an asset-type in the iov42 platform
+    // See api spec at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}/get
+    public async getAssetType(identityId: string, assetTypeId: string, keyPair: IKeyPairData) {
+        await this.ready;
+        const requestId = uuidv4();
+        const relativeUrl = `/api/${this.version}/asset-types/${assetTypeId}?requestId=${requestId}&nodeId=${this.nodeId}`;
+        const headers: IGetHeadersData = this.createGetHeaders(
+            identityId,
+            keyPair,
+            requestId,
+            relativeUrl,
+        );
+        const response = await this.executeReadRequest(
+            this.url + relativeUrl,
+            headers,
         );
         return response;
     }
