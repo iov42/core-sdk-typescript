@@ -3,7 +3,7 @@ import "mocha";
 import { v4 as uuidv4 } from "uuid";
 import { IKeyPairData, PlatformUtils, ProtocolIdType } from "../iov42/core-sdk";
 
-const rpcUrl = "https://api.vienna-integration.poc.iov42.net";
+const rpcUrl: string = process.env.ENDPOINT_URL!;
 const platformUtils = new PlatformUtils();
 
 let keyPair: IKeyPairData;

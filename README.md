@@ -18,6 +18,8 @@ $ npm install
 
 ## Running automated tests
 
+Before running the tests, you need to create the environment variable ENDPOINT_URL, and set it to the url of the api server.
+
 You can run the test cases by using the npm tool:
 ```console
 $ npm run test
@@ -31,7 +33,7 @@ The following code snipets show how to use the SDK.
 ```node
 import { PlatformClient, PlatformUtils } from '../iov42/core-sdk';
 
-const rpcUrl = "https://api.sandbox.iov42.dev";
+const rpcUrl = "api endpoint";
 const client = new PlatformClient(rpcUrl);
 const utils = new PlatformUtils();
 ```
@@ -83,7 +85,7 @@ The following code snipets show how to use the SDK.
 ```html
 <script src="../dist/iov42.min.js"></script>
 <script type="module">
-    const platformClient = new iov42.PlatformClient("https://api.sandbox.iov42.dev");
+    const platformClient = new iov42.PlatformClient("api endpoint");
     const platformUtils = new iov42.PlatformUtils();
 </script>
 ```
@@ -92,7 +94,7 @@ The following code snipets show how to use the SDK.
 ```html
 <script type="module">
     import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
-    const platformClient = new iov42.PlatformClient("https://api.sandbox.iov42.dev");
+    const platformClient = new iov42.PlatformClient("api endpoint");
     const platformUtils = new iov42.PlatformUtils();
     const requestId = uuidv4();
     const identityId = uuidv4();
