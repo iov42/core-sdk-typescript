@@ -192,8 +192,6 @@ class PlatformClient {
     }
 
     // Retrieves information about a node in the iov42 platform
-    // See api specs at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/operations/paths/~1node-info/get
     public async getNodeInfo() {
         const response = await this.platformUtils.executeReadRequest(
             this.url + `/api/${this.version}/node-info`,
@@ -202,7 +200,6 @@ class PlatformClient {
     }
 
     // Retrieves information about the node's health
-    // See api specs at https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/operations/paths/~1healthchecks/get
     public async getHealthChecks() {
         const response = await this.platformUtils.executeReadRequest(
             this.url + `/api/${this.version}/healthchecks`,
@@ -211,8 +208,6 @@ class PlatformClient {
     }
 
     // Returns information about a proof
-    // See api specs at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/proofs
     public async getProof(requestId: string, keyPair: IKeyPairData, delegatorIdentityId?: string) {
         await this.ready;
         const readRequestId: string = uuidv4();
@@ -231,8 +226,6 @@ class PlatformClient {
     }
 
     // Returns the status of a request in the iov42 platform
-    // See api specs at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/requests/paths/~1requests~1{requestId}/get
     public async getRequest(requestId: string) {
         await this.ready;
         const response = await this.platformUtils.executeReadRequest(
@@ -242,8 +235,6 @@ class PlatformClient {
     }
 
     // Returns transactions related to an asset
-    // See api specs at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/transactions/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}~1transactions/get
     public async getTransactions(query: ITransferQuery, keyPair: IKeyPairData, delegatorIdentityId?: string) {
         await this.ready;
         const readRequestId: string = uuidv4();
@@ -269,8 +260,6 @@ class PlatformClient {
     }
 
     // Creates an asset type in the iov42 platform
-    // See api spec at:
-    // https://api.staging.iov42.net/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types/post
     // Input:
     // request -> request details
     // keyPair -> key pair used to sign the request
@@ -301,8 +290,6 @@ class PlatformClient {
     }
 
     // Retrieves an asset-type in the iov42 platform
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}/get
     // Input:
     // assetTypeId -> asset type identifier
     // keyPair -> key pair used to sign the request
@@ -325,8 +312,6 @@ class PlatformClient {
     }
 
     // Creates an asset in the iov42 platform
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets/post
     // Input:
     // request -> request details
     // keyPair -> key pair used to sign the request
@@ -357,8 +342,6 @@ class PlatformClient {
     }
 
     // Adds quantity to the balance of a quantifiable asset in the iov42 platform
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}/get
     // Input:
     // request -> request details
     // keyPair -> key pair used to sign the request
@@ -389,8 +372,6 @@ class PlatformClient {
     }
 
     // Transfers assets
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/transfers/paths/~1transfers/post
     // Input:
     // request -> request details
     // keyPair -> key pair used to sign the request
@@ -425,8 +406,6 @@ class PlatformClient {
     }
 
     // Retrieves an asset in the iov42 platform
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}/get
     // Input:
     // assetId -> asset identifier
     // assetTypeId -> asset type identifier of assetId
@@ -451,8 +430,6 @@ class PlatformClient {
     }
 
     // Creates an identity in the iov42 platform
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities/post
     // Input:
     // request -> request details
     // keyPair -> key pair used to sign the request
@@ -481,8 +458,6 @@ class PlatformClient {
     }
 
     // Retrieves an identity in the iov42 platform
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}/get
     // Input:
     // identityId -> identity's identifier
     // keyPair -> key pair used to sign the request
@@ -505,8 +480,6 @@ class PlatformClient {
     }
 
     // Retrieves the public key of an identity
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1public-key/get
     // Input:
     // identityId -> identity's identifier
     // keyPair -> key pair used to sign the request
@@ -527,8 +500,6 @@ class PlatformClient {
     }
 
     // Creates identity's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1claims/post
     // Input:
     // request -> request details
     // claims -> array of claims, encoded as strings
@@ -562,8 +533,6 @@ class PlatformClient {
     }
 
     // Retrieves an identity's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1claims/get
     // Input:
     // identityId -> identity's identifier
     // keyPair -> key pair used to sign the request
@@ -586,8 +555,6 @@ class PlatformClient {
     }
 
     // Retrieves a single identity's claim
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1claims~1{hashedClaim}/get
     // Input:
     // identityId -> identity's identifier
     // keyPair -> key pair used to sign the request
@@ -610,8 +577,6 @@ class PlatformClient {
     }
 
     // Endorses identity's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1endorsements/post
     // Input:
     // request -> request details
     // claims -> array of claims, encoded as strings
@@ -649,8 +614,6 @@ class PlatformClient {
     }
 
     // Retrieves an identity's claim endorsement
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1claims~1{hashedClaim}~1endorsements~1{endorserId}/get
     // Input:
     // identityId -> identity's identifier
     // claim -> claim, hashed using sha(256) algorithm
@@ -675,8 +638,6 @@ class PlatformClient {
     }
 
     // Creates asset type's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1claims/post
     // Input:
     // request -> request details
     // claims -> array of claims, encoded as strings
@@ -710,8 +671,6 @@ class PlatformClient {
     }
 
     // Retrieves an asset type's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1claims/get
     // Input:
     // assetTypeId -> asset type's identifier
     // keyPair -> key pair used to sign the request
@@ -734,8 +693,6 @@ class PlatformClient {
     }
 
     // Retrieves a single asset type's claim
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1claims~1{hashedClaim}/get
     // Input:
     // assetTypeId -> asset type's identifier
     // claim -> claim, hashed using sha(256) algorithm
@@ -759,8 +716,6 @@ class PlatformClient {
     }
 
     // Endorses asset type's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1endorsements/post
     // Input:
     // request -> request details
     // claims -> array of claims, encoded as strings
@@ -797,8 +752,6 @@ class PlatformClient {
     }
 
     // Retrieves an asset type's claim endorsement
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1claims~1{hashedClaim}~1endorsements~1{endorserId}/get
     // Input:
     // assetTypeId -> asset type's identifier
     // claim -> claim, hashed using sha(256) algorithm
@@ -823,8 +776,6 @@ class PlatformClient {
     }
 
     // Creates asset's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}~1claims/post
     // Input:
     // request -> request details
     // claims -> array of claims, encoded as strings
@@ -858,8 +809,6 @@ class PlatformClient {
     }
 
     // Retrieves an asset's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}~1claims/get
     // Input:
     // assetId -> asset's identifier
     // assetTypeId -> asset's asse type
@@ -883,8 +832,6 @@ class PlatformClient {
     }
 
     // Retrieves a single asset's claim
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}~1claims~1{hashedClaim}/get
     // Input:
     // assetId -> asset's identifier
     // assetTypeId -> asset's asse type
@@ -909,8 +856,6 @@ class PlatformClient {
     }
 
     // Endorses asset`s or account's claims
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}~1endorsements/post
     // Input:
     // request -> request details
     // claims -> array of claims, encoded as strings
@@ -947,8 +892,6 @@ class PlatformClient {
     }
 
     // Retrieves an asset's or account's claim endorsement
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/assets/paths/~1asset-types~1{assetTypeId}~1assets~1{assetId}~1claims~1{hashedClaim}~1endorsements~1{endorserId}/get
     // Input:
     // assetId -> asset's identifier
     // assetTypeId -> asset type's identifier of assetId
@@ -1013,8 +956,6 @@ class PlatformClient {
     }
 
     // Adds delegate to an identity
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1delegates/post
     // Input:
     // identityId -> identity's identifier
     // request -> signed request
@@ -1049,8 +990,6 @@ class PlatformClient {
     }
 
     // Retrieves the delegates of an identity
-    // See api spec at:
-    // https://api.sandbox.iov42.dev/api/v1/apidocs/redoc.html#tag/identities/paths/~1identities~1{identityId}~1delegates/get
     // Input:
     // identityId -> identity's identifier
     // keyPair -> key pair used to sign the transaction

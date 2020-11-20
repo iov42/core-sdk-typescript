@@ -3,7 +3,7 @@ import "mocha";
 import { v4 as uuidv4 } from "uuid";
 import { IAddDelegateRequest, IAuthorisedRequest, IKeyPairData, ITransferOwnership, ITransferRequest, PlatformClient, PlatformUtils, ProtocolIdType, ICreateAssetRequest, ICreateAssetTypeRequest, ICreateIdentityRequest, ITransferItem, ITransferQuantity, ITransferQuery } from "../iov42/core-sdk";
 
-const rpcUrl = "https://api.vienna-integration.poc.iov42.net";
+const rpcUrl: string = process.env.ENDPOINT_URL!;
 const platformClient = new PlatformClient(rpcUrl);
 const platformUtils = new PlatformUtils();
 

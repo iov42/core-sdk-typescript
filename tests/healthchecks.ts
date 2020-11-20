@@ -2,7 +2,7 @@ import { expect } from "chai";
 import "mocha";
 import { PlatformClient } from "../iov42/core-sdk";
 
-const rpcUrl = "https://api.vienna-integration.poc.iov42.net";
+const rpcUrl: string = process.env.ENDPOINT_URL!;
 const platformClient = new PlatformClient(rpcUrl);
 
 describe("Retrieve node's health information", function() {

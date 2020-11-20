@@ -9,7 +9,7 @@
     <script src="../dist/iov42.min.js"></script>
     <script type="module">
         import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
-        const platformClient = new iov42.PlatformClient("https://api.sandbox.iov42.dev");
+        const platformClient = new iov42.PlatformClient("api endpoint");
         const platformUtils = new iov42.PlatformUtils();
         const requestId = uuidv4();
         const identityId = uuidv4();
