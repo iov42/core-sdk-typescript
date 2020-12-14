@@ -150,6 +150,9 @@ The tests folder contains the automated tests:
 The html folder contains sample HTML files showing how to use the SDK:
 - `create-identity.html` uses the SDK functions to create and retrieve identities.
 
+The use-cases folder contains scenarios using the iov42 platform:
+- `car-purchase.ts` uses the iov42 platform to showcase a car purchase.
+
 The dist folder contains the compiled SDK Javascript files:
 - `iov42.js` contains the bundled Javascript code.
 - `iov42.js.map` contains the source map for SDK code.
