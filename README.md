@@ -53,7 +53,7 @@ const keyPair = utils.generateKeypairWithProtocolId("SHA256WithRSA" as ProtocolI
 import { v4 as uuidv4 } from "uuid";
 const requestId = uuidv4();
 const identityId = uuidv4();
-const protocoldId: ProtocolIdType = "SHA256WithECDSA";
+const protocolId: ProtocolIdType = "SHA256WithECDSA";
 const keyPair = utils.generateKeypairWithProtocolId(protocolId, identityId);
 const request = {
     requestId : requestId,
