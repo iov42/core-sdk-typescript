@@ -19,10 +19,10 @@ let accountId1: string;
 let accountId2: string;
 let next: string;
 
-const inputs = [ /*
+const inputs = [
     {
         protocolId: "SHA256WithRSA" as ProtocolIdType,
-    }, */
+    },
     {
         protocolId: "SHA256WithECDSA" as ProtocolIdType,
     },
