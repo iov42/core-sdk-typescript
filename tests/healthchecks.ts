@@ -10,7 +10,7 @@ describe("Retrieve node's health information", function() {
         return platformClient.getHealthChecks()
         .then( (response) => {
             expect(response.buildInfo).to.exist;
-            expect(response.buildInfo.name).to.equal("api-model");
+            expect(response.buildInfo.name).to.equal("consumers-monitor");
             expect(response.buildInfo.version).to.exist;
             expect(response.buildInfo.scalaVersion).to.exist;
             expect(response.buildInfo.sbtVersion).to.exist;
