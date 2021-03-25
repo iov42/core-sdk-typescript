@@ -242,7 +242,11 @@ class PlatformUtils {
 
         return fetch(url, options)
         .then( async (response) => {
-            const json = await response.json();
+            const body = await response.text();
+            const json = body !== "" ? JSON.parse(body) : {
+                status: response.status,
+                statusText: response.statusText,
+            };
             if (response.status !== 200) {
                 throw (new Error(JSON.stringify(json)));
             }
