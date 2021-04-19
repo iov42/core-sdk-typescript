@@ -10,6 +10,7 @@ export type AssetTypeProperty = "Unique" | "Quantifiable";
 
 // Supported transaction types in the iov42 platform
 export type TransactionType = "IssueIdentityRequest" |
+    "CreateIdentityRequest" |
     "DefineAssetTypeRequest" |
     "CreateAssetRequest" |
     "TransfersRequest" |
@@ -435,7 +436,6 @@ class PlatformClient {
     // keyPair -> key pair used to sign the request
     public async createIdentity(request: ICreateIdentityRequest, keyPair: IKeyPairData) {
         await this.ready;
-        const identityId = request.identityId;
         if (!request.hasOwnProperty("requestId")) {
             request.requestId = uuidv4();
         }
