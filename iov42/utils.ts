@@ -34,7 +34,7 @@ class PlatformUtils {
         };
     }
 
-    // Signs the payload using one of the supported protocolId supported by iov42 platform
+    // Signs the payload using one of the protocolId supported by iov42 platform
     // Input:
     // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
     // privateKey -> private key data
@@ -58,6 +58,37 @@ class PlatformUtils {
             throw (new Error("Invalid protocolId"));
         }
         return signature;
+    }
+
+    // Verifies a signature using one of the protocolId supported by iov42 platform
+    // Input:
+    // protocolId -> one of the supported iov42 protocols (SHA256WithECDSA or SHA256WithRSA)
+    // publicKey -> public key data
+    // payload -> string used to verify signature
+    // signature -> payload's signature
+    public verifyWithProtocolId(protocolId: ProtocolIdType, publicKey: string, payload: string, signature: string) {
+        let pubKeyHex;
+        let signatureHex;
+        let isValid;
+
+        switch ( protocolId ) {
+        case "SHA256WithRSA":
+            pubKeyHex = Buffer.from(this.b64UrlToB64(publicKey), "base64").toString("hex");
+            signatureHex = Buffer.from(this.b64UrlToB64(signature), "base64").toString("hex");
+            isValid = this.verify("SHA256withRSA", "", pubKeyHex, payload, signatureHex);
+            break;
+
+        case "SHA256WithECDSA":
+            pubKeyHex = Buffer.from(this.b64UrlToB64(publicKey), "base64").toString("hex");
+            signatureHex = Buffer.from(this.b64UrlToB64(signature), "base64").toString("hex");
+            isValid = this.verify("SHA256withECDSA", "secp256k1", pubKeyHex, payload, signatureHex);
+            break;
+
+        default:
+            throw (new Error("Invalid protocolId"));
+        }
+
+        return isValid;
     }
 
     // Generates a hash according to the specified algorithm, and returns the result encoded as base64Url
@@ -397,6 +428,44 @@ class PlatformUtils {
             throw (new Error("Invalid format"));
 
         }
+    }
+
+    // Verifies the signature according to the specified algorithm and curve
+    // Input:
+    // algorithm -> algorithm to use for generating the key (see supported values in jsrsasign library)
+    // curveName -> curve to be used for signing payload (see supported values in jsrsasign library)
+    // publicKey -> public key data
+    // payload -> string to be verified
+    // signature -> payload's signature
+    private verify(algorithm: string, curveName: string, publicKey: string, payload: string, signature: string) {
+
+        let sig;
+        let isValid;
+
+        switch ( algorithm ) {
+        case "SHA256withRSA":
+            const rsaKey = new rs.RSAKey();
+            rsaKey.readPKCS8PubKeyHex(publicKey);
+            sig = new rs.KJUR.crypto.Signature({alg: "SHA256withRSA"});
+            sig.init(rsaKey);
+            sig.updateString(payload);
+            isValid = sig.verify(signature);
+            break;
+
+        case "SHA256withECDSA":
+            const ecKey = new rs.crypto.ECDSA();
+            ecKey.readPKCS8PubKeyHex(publicKey);
+            sig = new rs.KJUR.crypto.Signature({alg: "SHA256withECDSA", curve: curveName});
+            sig.init(ecKey);
+            sig.updateString(payload);
+            isValid = sig.verify(signature);
+            break;
+
+        default:
+            throw(new Error("Invalid algorithm"));
+        }
+
+        return isValid;
     }
 
 }
