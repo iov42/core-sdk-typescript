@@ -10,6 +10,7 @@ const platformUtils = new PlatformUtils();
 let identityId: string;
 let requestId: string;
 let keyPair: IKeyPairData;
+let proofJson: string;
 
 const inputs = [
     {
@@ -45,9 +46,21 @@ inputs.forEach(function(input) {
             it("should return success", function() {
                 return platformClient.getProof(requestId, keyPair)
                 .then( (response) => {
+                    proofJson = JSON.stringify(response)
                     expect(response.proof).exist;
                     expect(response.signatories).exist;
                     expect(response.parentFingerprints).exist;
+                });
+
+            });
+        });
+
+        describe("Validate proof", function() {
+            it("should return success", function() {
+                return platformUtils.validateProof(proofJson)
+                .then( (response) => {
+                    expect(response.valid).to.equal(true);
+                    expect(response.signatories).exist;
                 });
 
             });
