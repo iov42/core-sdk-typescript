@@ -91,6 +91,36 @@ class PlatformUtils {
         return isValid;
     }
 
+    // Validates a proof by checking the Authorisation signature
+    // Input:
+    // proofJson -> string contained the proof retrieved from the platform
+    public async validateProof(proofJson: string) {
+        const proof = JSON.parse(proofJson);
+        const nodeAuth = proof.proof.nodes.find(
+            (node: any) => node.id._type === "Authorisation",
+          );
+        const payload = nodeAuth.payload;
+        const signatories = [];
+        for (const seal of nodeAuth.links[0].seals) {
+            const signatory = proof.signatories.find(
+                (signer: any) => signer.identity === seal.identityId,
+              );
+            const publicKey = signatory.credentials.key;
+            const valid = await this.verifyWithProtocolId(seal.protocolId, publicKey, payload, seal.signature);
+            signatories.push({
+                identityId: seal.identityId,
+                protocolId: seal.protocolId,
+                publicKey,
+                signature: seal.signature,
+                valid,
+            });
+        }
+        return {
+            payload,
+            signatories,
+        };
+    }
+
     // Generates a hash according to the specified algorithm, and returns the result encoded as base64Url
     // Input:
     // algorithm -> algorithm to use for hashing (see supported values in jsrsasign library)
