@@ -59,8 +59,8 @@ inputs.forEach(function(input) {
             it("should return success", function() {
                 return platformUtils.validateProof(proofJson)
                 .then( (response) => {
-                    expect(response.valid).to.equal(true);
                     expect(response.signatories).exist;
+                    expect(response.signatories.filter((signatory) => signatory.valid === false).length).to.equal(0)
                 });
 
             });

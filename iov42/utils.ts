@@ -99,27 +99,25 @@ class PlatformUtils {
         const nodeAuth = proof.proof.nodes.find(
             (node: any) => node.id._type === "Authorisation",
           );
-        const identityId = nodeAuth.links[0].seals[0].identityId;
-        const protocolId = nodeAuth.links[0].seals[0].protocolId;
-        const signature = nodeAuth.links[0].seals[0].signature;
         const payload = nodeAuth.payload;
-        const signatory = proof.signatories.find(
-            (signer: any) => signer.identity === identityId,
-          );
-        const publicKey = signatory.credentials.key;
-
-        const valid = await this.verifyWithProtocolId(protocolId, publicKey, payload, signature);
+        const signatories = [];
+        for (const seal of nodeAuth.links[0].seals) {
+            const signatory = proof.signatories.find(
+                (signer: any) => signer.identity === seal.identityId,
+              );
+            const publicKey = signatory.credentials.key;
+            const valid = await this.verifyWithProtocolId(seal.protocolId, publicKey, payload, seal.signature);
+            signatories.push({
+                identityId: seal.identityId,
+                protocolId: seal.protocolId,
+                publicKey,
+                signature: seal.signature,
+                valid,
+            });
+        }
         return {
             payload,
-            signatories: [
-                {
-                    identityId,
-                    protocolId,
-                    publicKey,
-                    signature,
-                },
-            ],
-            valid,
+            signatories,
         };
     }
 
