@@ -8,6 +8,7 @@ jobs:
         - checkout
         - run:
             name: Install local dependencies
+            no_output_timeout: 30m
             command: npm install
         - run: mkdir ~/junit
         - run:
