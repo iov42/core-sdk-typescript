@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import "mocha";
 import { v4 as uuidv4 } from "uuid";
-import { IAddDelegateRequest, IAuthorisedRequest, IEndorseClaimsRequest, IKeyPairData, PlatformClient, PlatformUtils, ProtocolIdType, ICreateAssetRequest, ICreateAssetTypeRequest, ICreateIdentityRequest } from "../iov42/core-sdk";
+import { IAddDelegateRequest, IAuthorisedRequest, IEndorseClaimsRequest, IPermissionRequest, IKeyPairData, PlatformClient, PlatformUtils, ProtocolIdType, ICreateAssetRequest, ICreateAssetTypeRequest, ICreateIdentityRequest } from "../iov42/core-sdk";
 
 const rpcUrl: string = process.env.ENDPOINT_URL!;
 const platformClient = new PlatformClient(rpcUrl);
@@ -34,6 +34,100 @@ const inputs = [
     },
 ];
 
+const permissionsUniqueAssetType: IPermissionRequest = {
+    read: {
+        Everyone: "Grant",
+        TypeOwner: "Grant",
+        InstanceOwner: "Grant",
+    },
+    createClaim: {
+        Everyone: "Grant",
+        TypeOwner: "Grant",
+        InstanceOwner: "Grant",
+    },
+    endorseClaim: {
+        Everyone: "Grant",
+        TypeOwner: "Grant",
+        InstanceOwner: "Grant",
+    },
+    instances: {
+        read: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        create: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        createClaim: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        endorseClaim: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        transfer: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+    },
+}
+
+const permissionsQuantifiableAssetType: IPermissionRequest = {
+    read: {
+        Everyone: "Grant",
+        TypeOwner: "Grant",
+        InstanceOwner: "Grant",
+    },
+    createClaim: {
+        Everyone: "Grant",
+        TypeOwner: "Grant",
+        InstanceOwner: "Grant",
+    },
+    endorseClaim: {
+        Everyone: "Grant",
+        TypeOwner: "Grant",
+        InstanceOwner: "Grant",
+    },
+    instances: {
+        read: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        create: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        createClaim: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        endorseClaim: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        transfer: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+        addQuantity: {
+            Everyone: "Grant",
+            TypeOwner: "Grant",
+            InstanceOwner: "Grant",
+        },
+    },
+}
 
 inputs.forEach(input => {
 
@@ -96,6 +190,7 @@ inputs.forEach(input => {
                     assetTypeId: uniqueAssetTypeId,
                     type: "Unique",
                     requestId: uuidv4(),
+                    permissions: permissionsUniqueAssetType,
                 }
                 return platformClient.createAssetType(request, keyPair)
 
@@ -107,6 +202,7 @@ inputs.forEach(input => {
                     requestId: uuidv4(),
                     scale: 2,
                     type: "Quantifiable",
+                    permissions: permissionsQuantifiableAssetType,
                 }
                 return platformClient.createAssetType(request, keyPair)
             })

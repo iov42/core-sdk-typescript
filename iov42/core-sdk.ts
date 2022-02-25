@@ -23,6 +23,9 @@ export type TransactionType = "IssueIdentityRequest" |
     "CreateAssetTypeEndorsementsRequest" |
     "CreateAssetEndorsementsRequest";
 
+// Supported Permissions
+export type PermissionType = "Grant" | "Deny"
+
 // Data structure for a key pair
 export interface IKeyPairData {
     identityId: string;
@@ -70,6 +73,30 @@ export interface IPublicCredentials {
     protocolId: string;
 }
 
+
+// Data structure to define permissions
+export interface IPermission {
+    Everyone?: PermissionType;
+    TypeOwner?: PermissionType;
+    InstanceOwner?: PermissionType;
+}
+
+// Data structure to define request's permissions
+export interface IPermissionRequest {
+    read: IPermission;
+    createClaim?: IPermission;
+    endorseClaim?: IPermission;
+    instances: {
+        create?: IPermission;
+        read?: IPermission;
+        createClaim?: IPermission;
+        endorseClaim?: IPermission;
+        transfer?: IPermission;
+        addQuantity?: IPermission;
+    }
+}
+
+
 // Base data structure for all PUT requests
 export interface IBaseRequest {
     _type?: TransactionType;
@@ -88,6 +115,7 @@ export interface IAuthorisedRequest extends IBaseRequest {
 export interface ICreateIdentityRequest extends IBaseRequest {
     identityId: string;
     publicCredentials: IPublicCredentials;
+    permissions?: IPermissionRequest;
 }
 
 // Data structure used to create asset types
@@ -95,6 +123,7 @@ export interface ICreateAssetTypeRequest extends IBaseRequest {
     assetTypeId: string;
     scale?: number;
     type: AssetTypeProperty;
+    permissions?: IPermissionRequest;
 }
 
 // Data structure used to create assets
@@ -102,6 +131,7 @@ export interface ICreateAssetRequest extends IBaseRequest {
     assetId: string;
     assetTypeId: string;
     quantity?: string;
+    permissions?: IPermissionRequest;
 }
 
 // Data structure used to create claims
@@ -109,6 +139,7 @@ export interface ICreateClaimsRequest extends IBaseRequest {
     claims: string[];
     subjectId: string;
     subjectTypeId?: string;
+    permissions?: IPermissionRequest;
 }
 
 // Data structure used to endorse claims
@@ -117,6 +148,7 @@ export interface IEndorseClaimsRequest extends IBaseRequest {
     endorserId: string;
     subjectId: string;
     subjectTypeId?: string;
+    permissions?: IPermissionRequest;
 }
 
 // Data structure used to add delegate to identity

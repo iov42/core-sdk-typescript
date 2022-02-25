@@ -45,7 +45,7 @@ inputs.forEach(function(input) {
                 });
             });
         });
-
+/*
         describe("Create new identity", function() {
             it("should return success", function() {
                 const createRequestId = uuidv4();
@@ -68,7 +68,7 @@ inputs.forEach(function(input) {
                 });
             });
         });
-
+*/
         describe("Retrieve created identity", function() {
             it("should return success", function() {
                 return platformClient.getIdentity(identityId, keyPair)
