@@ -7,9 +7,6 @@ jobs:
     steps:
         - checkout
         - run:
-            name: Install npx
-            command: npm install -g npx
-        - run:
             name: Install local dependencies
             command: npm install
         - run: mkdir ~/junit
