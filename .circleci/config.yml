@@ -8,12 +8,12 @@ jobs:
         - checkout
         - run:
             name: Install local dependencies
-            no_output_timeout: 30m
             command: npm install
         - run: mkdir ~/junit
         - run:
             name: Testing
             command: npm run test -- --reporter mocha-junit-reporter
+            no_output_timeout: 30m
             environment:
               MOCHA_FILE: /home/circleci/junit/test-results.xml
             when: always
