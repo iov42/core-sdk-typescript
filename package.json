@@ -7,9 +7,9 @@
   "scripts": {
     "build": "npm run tsc && npm run webpack",
     "tsc": "tsc --build tsconfig.json",
-    "webpack": "node_modules/.bin/webpack && uglifyjs ./dist/iov42.js -c -m -o ./dist/iov42.min.js --source-map",
+    "webpack": "npx webpack && uglifyjs ./dist/iov42.js -c -m -o ./dist/iov42.min.js --source-map",
     "lint": "tslint -c tslint.json './iov42/*.ts' './use-cases/*.ts'",
-    "test": "node_modules/.bin/mocha -r ts-node/register tests/*.ts",
+    "test": "npx mocha -r ts-node/register tests/*.ts",
     "postinstall": "npm run tsc"
   },
   "author": {
@@ -26,7 +26,7 @@
     "@types/uuid": "^8.3.0",
     "chai": "^4.3.4",
     "https-proxy-agent": "^5.0.0",
-    "mocha": "^8.3.2",
+    "mocha": "^9.2.1",
     "mocha-junit-reporter": "^2.0.0",
     "ts-loader": "^9.0.0",
     "ts-node": "^9.1.1",

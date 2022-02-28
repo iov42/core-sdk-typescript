@@ -76,7 +76,7 @@ inputs.forEach(function(input) {
                     expect(response.identityId).to.equal(identityId);
                     expect(response.publicCredentials[0].key).to.equal(keyPair.pubKeyBase64);
                     expect(response.publicCredentials[0].protocolId).to.equal(input.protocolId);
-                    expect(response.proof).to.equal(`/api/v1/proofs/${requestId}`);
+                    //expect(response.proof).to.equal(`/api/v1/proofs/${requestId}`);
                 });
             });
         });
