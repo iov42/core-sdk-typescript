@@ -16,9 +16,6 @@ describe("Retrieve node's health information", function() {
             expect(response.buildInfo.sbtVersion).to.exist;
             expect(response.broker).to.exist;
             expect(response.broker.canWrite).to.equal(true);
-            expect(response.requestStore).to.exist;
-            expect(response.requestStore.canRead).to.equal(true);
-            expect(response.requestStore.canWrite).to.equal(true);
             expect(response.assetStore).to.exist;
             expect(response.assetStore.canRead).to.equal(true);
             expect(response.assetStore.canWrite).to.equal(true);
@@ -28,9 +25,6 @@ describe("Retrieve node's health information", function() {
             expect(response.endorsementStore).to.exist;
             expect(response.endorsementStore.canRead).to.equal(true);
             expect(response.endorsementStore.canWrite).to.equal(true);
-            expect(response.proofStore).to.exist;
-            expect(response.proofStore.canRead).to.equal(true);
-            expect(response.proofStore.canWrite).to.equal(true);
             expect(response.hsm).to.exist;
             expect(response.hsm.hasKeys).to.equal(true);
         });
