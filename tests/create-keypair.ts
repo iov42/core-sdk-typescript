@@ -19,7 +19,6 @@ const inputs = [
 
 inputs.forEach(function(input) {
     describe(`Testing create keypair method with protocolId="${input.protocolId}"`, function() {
-        this.timeout(60000);
 
         describe("Create new key pair", function() {
             it("should return success", function() {

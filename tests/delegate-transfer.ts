@@ -33,7 +33,6 @@ const inputs = [
 inputs.forEach(input => {
 
     describe(`Testing transfer methods using delegate with protocolId="${input.protocolId}"`, function () {
-        this.timeout(60000);
 
         before('Initializing identities, asset types', () => {
             identityId1 = uuidv4();

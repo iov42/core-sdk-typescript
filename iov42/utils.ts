@@ -1,6 +1,6 @@
 const rs = require("jsrsasign");
 import base64Url from "base64url";
-import { fetch } from "cross-fetch";
+//import { fetch } from "cross-fetch";
 import { v4 as uuidv4 } from "uuid";
 import { IAuthenticationData, IAuthorisationsData, IGetHeadersData, IKeyPairData, IPutHeadersData, ProtocolIdType} from "./core-sdk";
 

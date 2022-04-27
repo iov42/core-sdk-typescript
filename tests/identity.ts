@@ -22,7 +22,6 @@ const inputs = [
 
 inputs.forEach(function(input) {
     describe(`Testing identity methods with protocolId="${input.protocolId}"`, function() {
-        this.timeout(60000);
 
         describe("Issue new identity", function() {
             it("should return success", function() {

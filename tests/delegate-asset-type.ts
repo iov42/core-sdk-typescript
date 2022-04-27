@@ -25,7 +25,6 @@ const inputs = [
 inputs.forEach(function(input) {
 
     describe(`Testing asset-type methods using delegate with protocolId="${input.protocolId}"`, function() {
-        this.timeout(60000);
 
         before('Initializing identities', function() {
             identityId = uuidv4();

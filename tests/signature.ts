@@ -18,7 +18,6 @@ const inputs = [
 
 inputs.forEach(function(input) {
     describe(`Testing create keypair method with protocolId="${input.protocolId}"`, function() {
-        this.timeout(60000);
 
         before('Initializing keypair', () => {
             keyPair = platformUtils.generateKeypairWithProtocolId(input.protocolId, uuidv4());

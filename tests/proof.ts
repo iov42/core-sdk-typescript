@@ -23,7 +23,6 @@ const inputs = [
 
 inputs.forEach(function(input) {
     describe(`Testing proof methods with protocolId="${input.protocolId}"`, function() {
-        this.timeout(60000);
 
         before('Initializing identity', () => {
             identityId = uuidv4();

@@ -33,7 +33,6 @@ const inputs = [
 inputs.forEach(input => {
 
     describe(`Testing claim methods with protocolId="${input.protocolId}"`, function () {
-        this.timeout(60000);
 
         before('Initializing identities, asset types', () => {
             identityId = uuidv4();

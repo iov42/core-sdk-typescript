@@ -24,7 +24,6 @@ const inputs = [
 
 inputs.forEach(function(input) {
     describe(`Testing proof methods using delegate with protocolId="${input.protocolId}"`, function() {
-        this.timeout(60000);
 
         before('Initializing identities', () => {
             identityId = uuidv4();

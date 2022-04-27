@@ -132,7 +132,6 @@ const permissionsQuantifiableAssetType: IPermissionRequest = {
 inputs.forEach(input => {
 
     describe(`Testing endorsement methods using delegate with protocolId="${input.protocolId}"`, function () {
-        this.timeout(60000);
 
         before('Initializing identities, asset types', () => {
             identityId = uuidv4();
