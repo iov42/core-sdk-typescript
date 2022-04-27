@@ -1,4 +1,4 @@
-import base64Url from "base64url";
+import { Base64 } from 'js-base64';
 import { v4 as uuidv4 } from "uuid";
 import { PlatformUtils} from "./utils";
 
@@ -412,7 +412,7 @@ class PlatformClient {
         await this.ready;
 
         const authorisationsJson = JSON.stringify(request.authorisations);
-        const authorisationsBase64Url = base64Url(authorisationsJson);
+        const authorisationsBase64Url = Base64.encodeURI(authorisationsJson);
         request.authentication = {
             identityId: keyPair.identityId,
             protocolId: keyPair.protocolId,
@@ -422,7 +422,7 @@ class PlatformClient {
                 request.authorisations.reduce( (p: any, c: any) => `${p}${c.signature};`, "").slice(0, -1)),
         };
         const authenticationJson = JSON.stringify(request.authentication);
-        const authenticationBase64Url = base64Url(authenticationJson);
+        const authenticationBase64Url = Base64.encodeURI(authenticationJson);
 
         const headers: IPutHeadersData = {
             authenticationBase64Url,
@@ -618,7 +618,7 @@ class PlatformClient {
         await this.ready;
 
         const authorisationsJson = JSON.stringify(request.authorisations);
-        const authorisationsBase64Url = base64Url(authorisationsJson);
+        const authorisationsBase64Url = Base64.encodeURI(authorisationsJson);
         request.authentication = {
             identityId: keyPair.identityId,
             protocolId: keyPair.protocolId,
@@ -628,14 +628,14 @@ class PlatformClient {
                 request.authorisations.reduce( (p: any, c: any) => `${p}${c.signature};`, "").slice(0, -1)),
         };
         const authenticationJson = JSON.stringify(request.authentication);
-        const authenticationBase64Url = base64Url(authenticationJson);
+        const authenticationBase64Url = Base64.encodeURI(authenticationJson);
 
         const headers: IPutHeadersData = {
             authenticationBase64Url,
             authorisationsBase64Url,
             requestId: request.requestId,
         };
-        headers.claims = base64Url(JSON.stringify(this.platformUtils.createClaimsHeader(claims)));
+        headers.claims = Base64.encodeURI(JSON.stringify(this.platformUtils.createClaimsHeader(claims)));
 
         const response = await this.platformUtils.executePutRequest(
             this.url + `/api/${this.version}/requests/${request.requestId}`,
@@ -757,7 +757,7 @@ class PlatformClient {
         await this.ready;
 
         const authorisationsJson = JSON.stringify(request.authorisations);
-        const authorisationsBase64Url = base64Url(authorisationsJson);
+        const authorisationsBase64Url = Base64.encodeURI(authorisationsJson);
         request.authentication = {
             identityId: keyPair.identityId,
             protocolId: keyPair.protocolId,
@@ -767,13 +767,13 @@ class PlatformClient {
                 request.authorisations.reduce( (p: any, c: any) => `${p}${c.signature};`, "").slice(0, -1)),
         };
         const authenticationJson = JSON.stringify(request.authentication);
-        const authenticationBase64Url = base64Url(authenticationJson);
+        const authenticationBase64Url = Base64.encodeURI(authenticationJson);
         const headers: IPutHeadersData = {
             authenticationBase64Url,
             authorisationsBase64Url,
             requestId: request.requestId,
         };
-        headers.claims = base64Url(JSON.stringify(this.platformUtils.createClaimsHeader(claims)));
+        headers.claims = Base64.encodeURI(JSON.stringify(this.platformUtils.createClaimsHeader(claims)));
 
         const response = await this.platformUtils.executePutRequest(
             this.url + `/api/${this.version}/requests/${request.requestId}`,
@@ -897,7 +897,7 @@ class PlatformClient {
         await this.ready;
 
         const authorisationsJson = JSON.stringify(request.authorisations);
-        const authorisationsBase64Url = base64Url(authorisationsJson);
+        const authorisationsBase64Url = Base64.encodeURI(authorisationsJson);
         request.authentication = {
             identityId: keyPair.identityId,
             protocolId: keyPair.protocolId,
@@ -907,13 +907,13 @@ class PlatformClient {
                 request.authorisations.reduce( (p: any, c: any) => `${p}${c.signature};`, "").slice(0, -1)),
         };
         const authenticationJson = JSON.stringify(request.authentication);
-        const authenticationBase64Url = base64Url(authenticationJson);
+        const authenticationBase64Url = Base64.encodeURI(authenticationJson);
         const headers: IPutHeadersData = {
             authenticationBase64Url,
             authorisationsBase64Url,
             requestId: request.requestId,
         };
-        headers.claims = base64Url(JSON.stringify(this.platformUtils.createClaimsHeader(claims)));
+        headers.claims = Base64.encodeURI(JSON.stringify(this.platformUtils.createClaimsHeader(claims)));
 
         const response = await this.platformUtils.executePutRequest(
             this.url + `/api/${this.version}/requests/${request.requestId}`,
@@ -996,7 +996,7 @@ class PlatformClient {
         await this.ready;
 
         const authorisationsJson = JSON.stringify(request.authorisations);
-        const authorisationsBase64Url = base64Url(authorisationsJson);
+        const authorisationsBase64Url = Base64.encodeURI(authorisationsJson);
         request.authentication = {
             identityId: keyPair.identityId,
             protocolId: keyPair.protocolId,
@@ -1006,7 +1006,7 @@ class PlatformClient {
                 request.authorisations.reduce( (p: any, c: any) => `${p}${c.signature};`, "").slice(0, -1)),
         };
         const authenticationJson = JSON.stringify(request.authentication);
-        const authenticationBase64Url = base64Url(authenticationJson);
+        const authenticationBase64Url = Base64.encodeURI(authenticationJson);
 
         const headers: IPutHeadersData = {
             authenticationBase64Url,

@@ -1,6 +1,5 @@
 const rs = require("jsrsasign");
-import base64Url from "base64url";
-//import { fetch } from "cross-fetch";
+import { Base64 } from 'js-base64';
 import { v4 as uuidv4 } from "uuid";
 import { IAuthenticationData, IAuthorisationsData, IGetHeadersData, IKeyPairData, IPutHeadersData, ProtocolIdType} from "./core-sdk";
 
@@ -256,7 +255,7 @@ class PlatformUtils {
             identityId,
         );
         const headers: IGetHeadersData = {
-            authenticationBase64Url: base64Url(JSON.stringify(authentication)),
+            authenticationBase64Url: Base64.encodeURI(JSON.stringify(authentication)),
             requestId,
         };
         return headers;
@@ -282,8 +281,8 @@ class PlatformUtils {
             authorisations[0].signature,
         );
         const headers: IPutHeadersData = {
-            authenticationBase64Url: base64Url(JSON.stringify((authentication))),
-            authorisationsBase64Url: base64Url(JSON.stringify(authorisations)),
+            authenticationBase64Url: Base64.encodeURI(JSON.stringify((authentication))),
+            authorisationsBase64Url: Base64.encodeURI(JSON.stringify(authorisations)),
             requestId,
         };
         return headers;
@@ -306,7 +305,7 @@ class PlatformUtils {
             payload,
             delegatorIdentityId,
         );
-        headers.claims = base64Url(JSON.stringify(this.createClaimsHeader(claims)));
+        headers.claims = Base64.encodeURI(JSON.stringify(this.createClaimsHeader(claims)));
         return headers;
     }
 

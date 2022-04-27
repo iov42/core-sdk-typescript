@@ -37,8 +37,8 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
-    "base64url": "^3.0.1",
     "bignumber.js": "^9.0.1",
+    "js-base64": "^3.7.2",
     "jsrsasign": "^10.2.0",
     "uuid": "^8.3.2"
   }
