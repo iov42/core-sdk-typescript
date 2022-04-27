@@ -3,7 +3,7 @@ jobs:
   test:
     working_directory: ~/project
     docker:
-        - image: circleci/node:latest
+        - image: node:18-buster
     steps:
         - checkout
         - run:
