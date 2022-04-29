@@ -15,9 +15,6 @@ module.exports = {
   },
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
-    fallback: {
-        buffer: require.resolve('buffer/'),
-    },
   },
   output: {
     filename: 'iov42.js',
@@ -25,9 +22,4 @@ module.exports = {
     libraryTarget: 'var',
     library: 'iov42'
   },
-  plugins: [
-    new webpack.ProvidePlugin({
-        Buffer: ['buffer', 'Buffer'],
-    }),
-  ],
 };

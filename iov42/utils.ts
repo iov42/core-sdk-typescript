@@ -44,12 +44,12 @@ class PlatformUtils {
 
         switch ( protocolId ) {
         case "SHA256WithRSA":
-            prvKeyHex = Buffer.from(this.b64UrlToB64(privateKey), "base64").toString("hex");
+            prvKeyHex = rs.b64utohex(privateKey);
             signature = this.sign("SHA256withRSA", "", "base64url", prvKeyHex, payload);
             break;
 
         case "SHA256WithECDSA":
-            prvKeyHex = Buffer.from(this.b64UrlToB64(privateKey), "base64").toString("hex");
+            prvKeyHex = rs.b64utohex(privateKey);
             signature = this.sign("SHA256withECDSA", "secp256k1", "base64url", prvKeyHex, payload);
             break;
 
@@ -72,14 +72,14 @@ class PlatformUtils {
 
         switch ( protocolId ) {
         case "SHA256WithRSA":
-            pubKeyHex = Buffer.from(this.b64UrlToB64(publicKey), "base64").toString("hex");
-            signatureHex = Buffer.from(this.b64UrlToB64(signature), "base64").toString("hex");
+            pubKeyHex = rs.b64utohex(publicKey);
+            signatureHex = rs.b64utohex(signature);
             isValid = this.verify("SHA256withRSA", "", pubKeyHex, payload, signatureHex);
             break;
 
         case "SHA256WithECDSA":
-            pubKeyHex = Buffer.from(this.b64UrlToB64(publicKey), "base64").toString("hex");
-            signatureHex = Buffer.from(this.b64UrlToB64(signature), "base64").toString("hex");
+            pubKeyHex = rs.b64utohex(publicKey);
+            signatureHex = rs.b64utohex(signature);
             isValid = this.verify("SHA256withECDSA", "secp256k1", pubKeyHex, payload, signatureHex);
             break;
 
@@ -150,7 +150,7 @@ class PlatformUtils {
         const md = new rs.KJUR.crypto.MessageDigest({alg : algorithm, prov : "cryptojs"});
         md.updateString (payload);
         const mdHex = md.digest();
-        return this.b64ToB64Url(Buffer.from(mdHex, "hex").toString("base64"));
+        return rs.hextob64u(mdHex);
     }
 
     // Creates an array with the sha256 hash of claims
@@ -391,8 +391,8 @@ class PlatformUtils {
         const prvKeyPEM = rs.KEYUTIL.getPEM(keypair.prvKeyObj, "PKCS8PRV" );
         const pubKeyHex = rs.pemtohex(pubKeyPEM);
         const prvKeyHex = rs.pemtohex(prvKeyPEM);
-        const pubKeyBase64 = this.b64ToB64Url(Buffer.from(pubKeyHex, "hex").toString("base64"));
-        const prvKeyBase64 = this.b64ToB64Url(Buffer.from(prvKeyHex, "hex").toString("base64"));
+        const pubKeyBase64 = rs.hextob64u(pubKeyHex);
+        const prvKeyBase64 = rs.hextob64u(prvKeyHex);
 
         switch (format) {
         case "base64url":
@@ -401,38 +401,6 @@ class PlatformUtils {
         default:
             throw (new Error("Invalid keypair format"));
         }
-    }
-
-    // Converts a base64 string to base64Url string
-    // Input:
-    // input -> string in base64
-    private b64ToB64Url(input: string) {
-        const output = input.split("=")[0];
-        const output1 = output.replace(/\+/g, "-");
-        const output2 = output1.replace(/\//g, "_");
-        return output2;
-    }
-
-    // Converts a base64Url string to base64 string
-    // Input:
-    // input -> string in base64Url
-    private b64UrlToB64(input: string) {
-        const output = input.split("=")[0];
-        const output1 = output.replace(/\-/g, "+");
-        let output2 = output1.replace(/\_/g, "/");
-        switch (output.length % 4) {
-            case 0:
-                break;
-            case 2:
-                output2 = output2 + "==";
-                break;
-            case 3:
-                output2 = output2 + "=";
-                break;
-            default:
-                throw (new Error("Illegal base64url string!"));
-        }
-        return output2;
     }
 
     // Signs the payload according to the specified algorithm, curve, and returns the result in
@@ -472,7 +440,7 @@ class PlatformUtils {
 
         switch (format) {
         case "base64url":
-            const signatureBase64 = this.b64ToB64Url(Buffer.from(signature, "hex").toString("base64"));
+            const signatureBase64 = rs.hextob64u(signature);
             return signatureBase64;
 
         default:
