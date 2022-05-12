@@ -1,4 +1,4 @@
-import { Base64 } from 'js-base64';
+import { Base64 } from "js-base64";
 import { v4 as uuidv4 } from "uuid";
 import { PlatformUtils} from "./utils";
 
@@ -24,7 +24,7 @@ export type TransactionType = "IssueIdentityRequest" |
     "CreateAssetEndorsementsRequest";
 
 // Supported Permissions
-export type PermissionType = "Grant" | "Deny"
+export type PermissionType = "Grant" | "Deny";
 
 // Data structure for a key pair
 export interface IKeyPairData {
@@ -73,7 +73,6 @@ export interface IPublicCredentials {
     protocolId: string;
 }
 
-
 // Data structure to define permissions
 export interface IPermission {
     Everyone?: PermissionType;
@@ -93,9 +92,8 @@ export interface IPermissionRequest {
         endorseClaim?: IPermission;
         transfer?: IPermission;
         addQuantity?: IPermission;
-    }
+    };
 }
-
 
 // Base data structure for all PUT requests
 export interface IBaseRequest {
@@ -215,6 +213,9 @@ class PlatformClient {
             .then((nodeInfo) => {
                 this.nodeId = nodeInfo.nodeId;
                 resolve(undefined);
+            })
+            .catch((error) => {
+                reject(error);
             });
         });
     }

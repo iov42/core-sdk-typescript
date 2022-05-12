@@ -1,5 +1,5 @@
 const rs = require("jsrsasign");
-import { Base64 } from 'js-base64';
+import { Base64 } from "js-base64";
 import { v4 as uuidv4 } from "uuid";
 import { IAuthenticationData, IAuthorisationsData, IGetHeadersData, IKeyPairData, IPutHeadersData, ProtocolIdType} from "./core-sdk";
 
