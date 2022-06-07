@@ -82,10 +82,11 @@ export interface IPermission {
 
 // Data structure to define request's permissions
 export interface IPermissionRequest {
-    read: IPermission;
+    read?: IPermission;
     createClaim?: IPermission;
+    createIdentity?: PermissionType;
     endorseClaim?: IPermission;
-    instances: {
+    instances?: {
         create?: IPermission;
         read?: IPermission;
         createClaim?: IPermission;

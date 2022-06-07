@@ -15,7 +15,7 @@ class PlatformUtils {
 
         switch ( protocolId ) {
         case "SHA256WithECDSA":
-            keypair = this.generateKeypair("ECDSA", "secp256k1", "base64url");
+            keypair = this.generateKeypair("ECDSA", "secp256r1", "base64url");
             break;
 
         case "SHA256WithRSA":
@@ -50,7 +50,7 @@ class PlatformUtils {
 
         case "SHA256WithECDSA":
             prvKeyHex = rs.b64utohex(privateKey);
-            signature = this.sign("SHA256withECDSA", "secp256k1", "base64url", prvKeyHex, payload);
+            signature = this.sign("SHA256withECDSA", "secp256r1", "base64url", prvKeyHex, payload);
             break;
 
         default:
@@ -80,7 +80,7 @@ class PlatformUtils {
         case "SHA256WithECDSA":
             pubKeyHex = rs.b64utohex(publicKey);
             signatureHex = rs.b64utohex(signature);
-            isValid = this.verify("SHA256withECDSA", "secp256k1", pubKeyHex, payload, signatureHex);
+            isValid = this.verify("SHA256withECDSA", "secp256r1", pubKeyHex, payload, signatureHex);
             break;
 
         default:

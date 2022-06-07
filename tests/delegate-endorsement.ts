@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import "mocha";
 import { v4 as uuidv4 } from "uuid";
-import { IAddDelegateRequest, IAuthorisedRequest, IEndorseClaimsRequest, IPermissionRequest, IKeyPairData, PlatformClient, PlatformUtils, ProtocolIdType, ICreateAssetRequest, ICreateAssetTypeRequest, ICreateIdentityRequest } from "../iov42/core-sdk";
+import { IAddDelegateRequest, IAuthorisedRequest, IEndorseClaimsRequest, IPermissionRequest, IKeyPairData, PlatformClient, PlatformUtils, ProtocolIdType, ICreateAssetRequest, ICreateAssetTypeRequest, ICreateClaimsRequest, ICreateIdentityRequest } from "../iov42/core-sdk";
 
 const rpcUrl: string = process.env.ENDPOINT_URL!;
 const platformClient = new PlatformClient(rpcUrl);
@@ -150,6 +150,13 @@ inputs.forEach(input => {
             };
             return platformClient.createIdentity(request, keyPair)
             .then( () => {
+                const request: ICreateClaimsRequest = {
+                    claims: platformUtils.createClaimsHashArray(claims),
+                    subjectId: identityId,
+                }
+                return platformClient.createIdentityClaims(request, claims, keyPair)
+            })
+            .then( () => {
                 const request: ICreateIdentityRequest = {
                     identityId: endorserId,
                     publicCredentials: {
@@ -192,7 +199,13 @@ inputs.forEach(input => {
                     permissions: permissionsUniqueAssetType,
                 }
                 return platformClient.createAssetType(request, keyPair)
-
+            })
+            .then( () => {
+                const request: ICreateClaimsRequest = {
+                    claims: platformUtils.createClaimsHashArray(claims),
+                    subjectId: uniqueAssetTypeId,
+                }
+                return platformClient.createAssetTypeClaims(request, claims, keyPair)
             })
             .then( () => {
                 quantifiableAssetTypeId = uuidv4();
@@ -206,6 +219,13 @@ inputs.forEach(input => {
                 return platformClient.createAssetType(request, keyPair)
             })
             .then( () => {
+                const request: ICreateClaimsRequest = {
+                    claims: platformUtils.createClaimsHashArray(claims),
+                    subjectId: quantifiableAssetTypeId,
+                }
+                return platformClient.createAssetTypeClaims(request, claims, keyPair)
+            })
+            .then( () => {
                 uniqueAssetId = uuidv4();
                 requestId = uuidv4()
                 const request: ICreateAssetRequest = {
@@ -214,6 +234,14 @@ inputs.forEach(input => {
                     requestId,
                 }
                 return platformClient.createAsset(request, keyPair)
+            })
+            .then( () => {
+                const request: ICreateClaimsRequest = {
+                    claims: platformUtils.createClaimsHashArray(claims),
+                    subjectId: uniqueAssetId,
+                    subjectTypeId: uniqueAssetTypeId,
+                }
+                return platformClient.createAssetClaims(request, claims, keyPair)
             })
             .then( () => {
                 accountId = uuidv4();
@@ -225,6 +253,14 @@ inputs.forEach(input => {
                     requestId,
                 }
                 return platformClient.createAsset(request, keyPair)
+            })
+            .then( () => {
+                const request: ICreateClaimsRequest = {
+                    claims: platformUtils.createClaimsHashArray(claims),
+                    subjectId: accountId,
+                    subjectTypeId: quantifiableAssetTypeId,
+                }
+                return platformClient.createAssetClaims(request, claims, keyPair)
             })
         });
 
@@ -248,7 +284,7 @@ inputs.forEach(input => {
                     delegateKeyPair,
                     endorserId,
                 );
-                const response = await platformClient.endorseIdentityClaims(finalRequest, claims, delegateKeyPair);
+                const response = await platformClient.endorseIdentityClaims(finalRequest, [], delegateKeyPair);
                 expect(response.requestId).to.equal(request.requestId);
                 expect(response.resources.length).to.equal(6);
                 expect(response.resources[0]).to.equal(`/api/v1/identities/${identityId}/claims/${platformUtils.hash("sha256", claims[0])}`);
@@ -297,7 +333,7 @@ inputs.forEach(input => {
                     delegateKeyPair,
                     endorserId,
                 );
-                const response = await platformClient.endorseAssetTypeClaims(finalRequest, claims, delegateKeyPair);
+                const response = await platformClient.endorseAssetTypeClaims(finalRequest, [], delegateKeyPair);
                 expect(response.requestId).to.equal(request.requestId);
                 expect(response.resources.length).to.equal(6);
                 expect(response.resources[0]).to.equal(`/api/v1/asset-types/${uniqueAssetTypeId}/claims/${platformUtils.hash("sha256", claims[0])}`);
@@ -341,7 +377,7 @@ inputs.forEach(input => {
                     delegateKeyPair,
                     endorserId,
                 );                
-                const response = await platformClient.endorseAssetTypeClaims(finalRequest, claims, delegateKeyPair);
+                const response = await platformClient.endorseAssetTypeClaims(finalRequest, [], delegateKeyPair);
                 expect(response.resources.length).to.equal(6);
                 expect(response.resources[0]).to.equal(`/api/v1/asset-types/${quantifiableAssetTypeId}/claims/${platformUtils.hash("sha256", claims[0])}`);
                 expect(response.resources[1]).to.equal(`/api/v1/asset-types/${quantifiableAssetTypeId}/claims/${platformUtils.hash("sha256", claims[0])}/endorsements/${endorserId}`);
@@ -386,7 +422,7 @@ inputs.forEach(input => {
                     delegateKeyPair,
                     endorserId,
                 );
-                const response = await platformClient.endorseAssetClaims(finalRequest, claims, delegateKeyPair);
+                const response = await platformClient.endorseAssetClaims(finalRequest, [], delegateKeyPair);
                 expect(response.resources.length).to.equal(6);
                 expect(response.resources[0]).to.equal(`/api/v1/asset-types/${uniqueAssetTypeId}/assets/${uniqueAssetId}/claims/${platformUtils.hash("sha256", claims[0])}`);
                 expect(response.resources[1]).to.equal(`/api/v1/asset-types/${uniqueAssetTypeId}/assets/${uniqueAssetId}/claims/${platformUtils.hash("sha256", claims[0])}/endorsements/${endorserId}`);
@@ -431,7 +467,7 @@ inputs.forEach(input => {
                     delegateKeyPair,
                     endorserId,
                 );
-                const response = await platformClient.endorseAssetClaims(finalRequest, claims, delegateKeyPair);
+                const response = await platformClient.endorseAssetClaims(finalRequest, [], delegateKeyPair);
                 expect(response.resources.length).to.equal(6);
                 expect(response.resources[0]).to.equal(`/api/v1/asset-types/${quantifiableAssetTypeId}/assets/${accountId}/claims/${platformUtils.hash("sha256", claims[0])}`);
                 expect(response.resources[1]).to.equal(`/api/v1/asset-types/${quantifiableAssetTypeId}/assets/${accountId}/claims/${platformUtils.hash("sha256", claims[0])}/endorsements/${endorserId}`);
