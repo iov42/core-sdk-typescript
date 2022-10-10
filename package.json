@@ -19,18 +19,18 @@
   "devDependencies": {
     "@types/chai": "^4.2.16",
     "@types/es6-shim": "^0.31.41",
-    "@types/http-proxy-agent": "^2.0.2",
-    "@types/jsrsasign": "^8.0.11",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^14.14.41",
+    "@types/http-proxy-agent": "^4.0.1",
+    "@types/jsrsasign": "^10.5.4",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^18.8.3",
     "@types/uuid": "^8.3.0",
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
     "https-proxy-agent": "^5.0.0",
-    "mocha": "^9.2.1",
+    "mocha": "^10.0.0",
     "mocha-junit-reporter": "^2.0.0",
     "ts-loader": "^9.0.0",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.9.1",
     "typescript": "^4.2.4",
     "uglify-js": "^3.13.4",
     "webpack": "^5.33.2",
@@ -40,6 +40,6 @@
     "bignumber.js": "^9.0.1",
     "js-base64": "^3.7.2",
     "jsrsasign": "^10.2.0",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   }
 }
